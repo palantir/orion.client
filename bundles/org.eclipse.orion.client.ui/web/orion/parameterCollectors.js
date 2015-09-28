@@ -81,8 +81,8 @@ define(['i18n!orion/nls/messages', 'orion/webui/littlelib'],
 				this._activeElements.onClose = onClose;
 				var focusNode = fillFunction(this._activeElements.parameterArea, this._activeElements.dismissArea);
 				if (!focusNode) {
-					// no parameters were generated.  
-					return false;
+					// no required parameters
+					return true;
 				}
 				this._activeElements.focusNode = focusNode;
 				var close = lib.$$array("#closebox", this._activeElements.dismissArea || this._activeElements.parameterArea); //$NON-NLS-0$
@@ -300,16 +300,6 @@ define(['i18n!orion/nls/messages', 'orion/webui/littlelib'],
 					button.classList.add("dismissButton"); //$NON-NLS-0$
 					return button;
 				};
-				
-				if (commandInvocation.parameters.hasOptionalParameters()) {
-					commandInvocation.parameters.optionsRequested = false;
-					
-					var options = makeButton(messages["More"], parentDismiss); //$NON-NLS-0$
-					options.addEventListener("click", function() { //$NON-NLS-0$
-						commandInvocation.parameters.optionsRequested = true;
-						finish(self);
-					}, false);
-				}
 				// OK and cancel buttons
 				var ok = makeButton(parameters.getSubmitName ? parameters.getSubmitName(commandInvocation) : messages["Submit"], parentDismiss);
 					ok.addEventListener("click", function() { //$NON-NLS-0$
@@ -328,6 +318,24 @@ define(['i18n!orion/nls/messages', 'orion/webui/littlelib'],
 					localClose();
 					if (typeof(cancelFunction) === 'function') cancelFunction();
 				}, false);
+
+				if (commandInvocation.parameters.hasOptionalParameters()) {
+					commandInvocation.parameters.optionsRequested = false;
+
+					var options = makeButton(messages["More"], parentDismiss); //$NON-NLS-0$
+					var activateMoreOptions = function() {
+						commandInvocation.parameters.optionsRequested = true;
+						finish(self);
+					}
+					if (Object.keys(commandInvocation.parameters.parameterTable).length === 0) {
+						activateMoreOptions();
+					} else {
+						options.addEventListener("click", function() { //$NON-NLS-0$
+							activateMoreOptions();
+						}, false);
+					}
+				}
+
 				return first;
 			};
 		 }
