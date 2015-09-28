@@ -456,8 +456,11 @@ define([
 						} 
 						if(error.JsonData.Host){
 							error.Retry = {
-								addParameters : [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]}, {id: "sshpassword", type: "password", name:  gitmessages["Password:"]}],
-								optionalParameters: [{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]}, {id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}]
+								addParameters : [], // we don't know what sort of credentials will be needed, so make all parameters optional
+								optionalParameters: [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]},
+													{id: "sshpassword", type: "password", name:  gitmessages["Password:"]},
+													{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]},
+													{id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}]
 							};
 							deferred.reject(error);
 							return;
@@ -528,8 +531,12 @@ define([
 	}, {
 		id: "orion.git.projecthandler",
 		type: "git",
-		addParameters: [{id: "url", type: "url", name: gitmessages["Url:"]}],
-		optionalParameters: [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]}, {id: "sshpassword", type: "password", name:  gitmessages["Password:"]},{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]}, {id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}],
+		addParameters: [], // we don't know what sort of credentials will be needed, so make all parameters optional
+		optionalParameters: [{id: "url", type: "url", name: gitmessages["Url:"]},
+							{id: "sshuser", type: "text", name:  gitmessages["User Name:"]},
+							{id: "sshpassword", type: "password", name:  gitmessages["Password:"]},
+							{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]},
+							{id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}],
 		nls: "git/nls/gitmessages",
 		addDependencyName: gitmessages["addDependencyName"],
 		addDependencyTooltip: gitmessages["addDependencyTooltip"],
