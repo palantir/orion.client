@@ -46,6 +46,7 @@ define([
 	StatusReportingService.prototype = /** @lends orion.status.StatusReportingService.prototype */ {
 	
 		_init: function() {
+			window.clearTimeout(this._timer);
 			var closeButton = lib.node(closeButtonDomId); //$NON-NLS-0$
 			if (closeButton && !this._hookedClose) {
 				closeButton.style.cursor = "pointer"; //$NON-NLS-0$
@@ -92,6 +93,38 @@ define([
 			}
 			return this._notifierElements;
 		},
+
+		/**
+		 * Returns a JSON object with the message details, or a string if no JSON is included. 
+		 * @param {String|orionError} messageObject ResponseText from xhrGet, deferred error object, or plain string
+		 */
+		retrieveStatus: function(messageObject) { 
+			var status = messageObject.responseText || messageObject.message || messageObject;
+			if(status instanceof Error) {
+				status.Severity = SEV_ERROR;
+			} else if (typeof status === "string") {
+				try {
+					status = JSON.parse(status);
+				} catch(error) {
+					//it is not JSON, just continue;
+				}
+			}
+			return status;
+		},
+
+		/**
+		 * Returns a message that is as detailed as possible.
+		 * @param {String|orionError} status Either a string or a JSON representation of an IStatus
+		 */
+		retrieveMessageFromStatus: function(status) { 
+			var msg = status.DetailedMessage || status.Message || status.toString();
+			if (msg === Object.prototype.toString()) {
+				// Last ditch effort to prevent user from seeing meaningless "[object Object]" message
+				msg = messages.UnknownError;
+			}
+			return msg;
+		},
+
 		/**
 		 * Displays a status message to the user.
 		 * @param {String} msg Message to display.
@@ -141,17 +174,9 @@ define([
 			this._clickToDisMiss = true;
 			this.statusMessage = st;
 			this._init();
-			//could be: responseText from xhrGet, deferred error object, or plain string
-			var status = st.responseText || st.message || st;
-			//accept either a string or a JSON representation of an IStatus
-			if (typeof status === "string") {
-				try {
-					status = JSON.parse(status);
-				} catch(error) {
-					//it is not JSON, just continue;
-				}
-			}
-			var message = status.Message || status;
+
+			var status = this.retrieveStatus(st);
+			var message = this.retrieveMessageFromStatus(status);
 			var color = "red"; //$NON-NLS-0$
 			if (status.Severity) {
 				switch (status.Severity) {
@@ -219,27 +244,10 @@ define([
 			this._clickToDisMiss = false;
 			this._cancelMsg = cancelMsg;
 			this.progressMessage = message;
-			//could either be responseText from xhrGet or just a string
-			var status = message.responseText || message;
-			if(status instanceof Error) {
-				status.Severity = SEV_ERROR;
-			}
-			//accept either a string or a JSON representation of an IStatus
-			else if (typeof status === "string") {
-				try {
-					status = JSON.parse(status);
-				} catch(error) {
-					//it is not JSON, just continue;
-				}
-			}
 			this._init();
 
-			// Create the message
-			var msg = status.Message || status.toString();
-			if (msg === Object.prototype.toString()) {
-				// Last ditch effort to prevent user from seeing meaningless "[object Object]" message
-				msg = messages.UnknownError;
-			}
+			var status = this.retrieveStatus(message);
+			var msg = this.retrieveMessageFromStatus(status);
 			var node = lib.node(this.progressDomId);
 			lib.empty(node);
 			node.appendChild(this.createMessage(status, msg));
@@ -344,9 +352,6 @@ define([
 			if (!links.length && status.Severity !== SEV_WARNING && status.Severity !== SEV_ERROR && !this._cancelMsg) {
 				// Message has no links in it, and is not a Warning or Error severity. Therefore we consider
 				// it unimportant and will auto hide it in 5 seconds.
-				if(this._timer){
-					window.clearTimeout(this._timer);
-				}
 				this._timer = window.setTimeout(function(){
 					this.setProgressMessage("");
 					this._timer = null;

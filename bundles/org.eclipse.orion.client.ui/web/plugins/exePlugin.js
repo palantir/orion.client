@@ -11,8 +11,6 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 	}
 
 	function registerServiceProviders(provider) {
-		console.log("Register Exe: start");
-
 		function getResponse(uri) {
 			return xhr("GET", uri, { //$NON-NLS-0$
 				headers: {
@@ -29,7 +27,6 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 		var serviceImpl = {
 			getExeResult: function(command, fileLocation) {
 				var uri = ".." + fileLocation.replace("file", "exe") + "?command=" + command;
-				console.log(uri);
 				return getResponse(uri);
 			}
 		};
@@ -39,7 +36,6 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 
 		var runImpl = {
 				callback: function(args, context) {
-					console.log("New doctest impl, args:" + JSON.stringify(args) + ", context: " + JSON.stringify(context));
 					return serviceImpl.getExeResult(args.command, context.cwd + args.file.path);
 				}
 		};
@@ -60,7 +56,6 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 
 		provider.registerService("orion.exe", serviceImpl, serviceProperties);
 		provider.registerServiceProvider("orion.shell.command", runImpl, runProperties);
-		console.log("Register Exe: done");
 	}
 
 	return {
