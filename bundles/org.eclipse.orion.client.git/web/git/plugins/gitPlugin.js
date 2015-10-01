@@ -394,6 +394,15 @@ define([
 		return gitUrl;
 	}
 	
+	function getProjectName(gitInfo, clone) {
+		var baseName = gitInfo.repoName || clone.Name;
+		if (gitInfo.serverName) {
+			return baseName + " at " + gitInfo.serverName;
+		} else {
+			return baseName;
+		}
+	}
+
 	provider.registerService("orion.project.handler", {
 		paramsToDependencyDescription: function(params){
 			return {Type: "git", Location: removeUserInformation(params.url)};
@@ -414,7 +423,7 @@ define([
 						if(isProject){
 							deferred.resolve({ContentLocation: clone.ContentLocation});					
 						} else {
-							deferred.resolve({Type: "git", Location: removeUserInformation(clone.GitUrl), Name: (gitInfo.repoName || clone.Name) + " at " + gitInfo.serverName});					
+							deferred.resolve({Type: "git", Location: removeUserInformation(clone.GitUrl), Name: getProjectName(gitInfo, clone)});
 						}
 					}, deferred.reject, deferred.progress);
 				}.bind(this), function(error){
@@ -489,7 +498,7 @@ define([
 					}
 					if(clone.GitUrl){
 						var gitInfo = parseGitUrl(clone.GitUrl);
-						deferred.resolve({Type: "git", Location: removeUserInformation(clone.GitUrl), Name: (gitInfo.repoName || clone.Name) + " at " + gitInfo.serverName});
+						deferred.resolve({Type: "git", Location: removeUserInformation(clone.GitUrl), Name: getProjectName(gitInfo, clone)});
 					}
 				},deferred.reject, deferred.progress
 			);
