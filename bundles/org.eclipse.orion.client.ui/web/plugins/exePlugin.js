@@ -26,7 +26,7 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 
 		var serviceImpl = {
 			getExeResult: function(command, fileLocation) {
-				var uri = ".." + fileLocation.replace("file", "exe") + "?command=" + command;
+				var uri = ".." + fileLocation.replace("file", "exe") + "?command=" + command; //$NON-NLS-0$
 				return getResponse(uri);
 			}
 		};
@@ -36,7 +36,8 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 
 		var runImpl = {
 				callback: function(args, context) {
-					return serviceImpl.getExeResult(args.command, context.cwd + args.file.path);
+					var fileLocation = (args.file.path.indexOf("/file") == 0) ? args.file.path : context.cwd + args.file.path; //$NON-NLS-0$
+					return serviceImpl.getExeResult(args.command, fileLocation);
 				}
 		};
 		var runProperties = {
