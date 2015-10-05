@@ -26,20 +26,19 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 		}
 
 		var serviceImpl = {
-			getExeResult: function(command, fileLocation) {
-				var uri = ".." + fileLocation.replace("file", "exe") + "?command=" + command;
-				console.log(uri);
-				return getResponse(uri);
-			}
+				getExeResult: function(command, fileLocation) {
+					var uri = ".." + fileLocation.replace("file", "exe") + "?command=" + command; //$NON-NLS-0$
+					return getResponse(uri);
+				}
 		};
 		var serviceProperties = {
-	              name: "Exe",
+				name: "Exe",
 		};
 
 		var runImpl = {
 				callback: function(args, context) {
-					console.log("New doctest impl, args:" + JSON.stringify(args) + ", context: " + JSON.stringify(context));
-					return serviceImpl.getExeResult(args.command, context.cwd + args.file.path);
+					var fileLocation = (args.file.path.indexOf("/file") == 0) ? args.file.path : context.cwd + args.file.path; //$NON-NLS-0$
+					return serviceImpl.getExeResult(args.command, fileLocation);
 				}
 		};
 		var runProperties = {
