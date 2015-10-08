@@ -347,23 +347,14 @@ define([
 			sidebar.sidebarNavInputManager.addEventListener("projectDisplayed", handleDisplay); //$NON-NLS-0$
 		}
 		this.editorInputManager.addEventListener("InputChanged", function(event) { //$NON-NLS-0$
-			openProject(event.metadata);
+			if (!sidebar.getActiveViewModeId()){
+				sidebar.setViewMode(sidebar.getNavigationViewMode().id);
+			}
 		});
-		// Only show project view mode if selection is in a project
+		// Never show project view mode
 		this.sidebarNavInputManager.addEventListener("selectionChanged", function(event){ //$NON-NLS-0$
 			if (sidebar.getActiveViewModeId() === _self.id) { return; }
-			_self.project = null;
-			var item = event.selections && event.selections.length > 0 ? event.selections[0] : null;
-			if (item) {
-				_self.getProject(item).then(function(project) {
-					_self.getProjectJson(project).then(function(json) {
-						_self.project = project;
-						_self.showViewMode(!!json);
-					});
-				});
-			} else {
-				_self.showViewMode(false);
-			}
+			_self.showViewMode(false);
 		});
 	}
 	objects.mixin(ProjectNavViewMode.prototype, {
