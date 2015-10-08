@@ -63,6 +63,7 @@ define({//Default message bundle
 	"CreateLinkedFolder": "Create a folder that links to an existing folder on the server.",
 	"Server path:": "Server path:",
 	"NameLocationNotClear": "The name and server location were not specified.",
+	"AutoLinkNameOrPathNotDefined": "The auto-link name or path hasn't been set in the server configuration.",
 	"Go Up": "Go Up",
 	"GoUpToParent": "Move up to the parent folder",
 	"Go Into": "Go Into",

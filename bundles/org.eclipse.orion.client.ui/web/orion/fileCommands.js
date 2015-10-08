@@ -15,9 +15,9 @@
 define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18nUtil', 'orion/uiUtils', 'orion/fileUtils', 'orion/commands', 'orion/fileDownloader',
 	'orion/commandRegistry', 'orion/contentTypes', 'orion/compare/compareUtils', 
 	'orion/Deferred', 'orion/webui/dialogs/DirectoryPrompterDialog', 'orion/webui/dialogs/SFTPConnectionDialog',
-	'orion/EventTarget', 'orion/form', 'orion/xhr', 'orion/xsrfUtils'],
+	'orion/EventTarget', 'orion/form', 'orion/xhr', 'orion/xsrfUtils', 'require'],
 	function(messages, lib, i18nUtil, mUIUtils, mFileUtils, mCommands, mFileDownloader, mCommandRegistry,
-			mContentTypes, mCompareUtils, Deferred, DirPrompter, SFTPDialog, EventTarget, form, xhr, xsrfUtils){
+			mContentTypes, mCompareUtils, Deferred, DirPrompter, SFTPDialog, EventTarget, form, xhr, xsrfUtils, require){
 
 	/**
 	 * Utility methods
@@ -386,12 +386,16 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 			return path;
 		}
 		
-		function canCreateProject(item) {
+		function getWorkspaceLocation() {
+			var treeRoot = explorer.treeRoot;
+			return treeRoot.WorkspaceLocation ? treeRoot.WorkspaceLocation : treeRoot.ChildrenLocation;
+		}
+
+		function canCreateProject(location) {
 			if (!explorer || !explorer.isCommandsVisible()) {
 				return false;
 			}
-			item = forceSingleItem(item);
-			return item.Location && mFileUtils.isAtRoot(item.Location);
+			return location && mFileUtils.isAtRoot(location);
 		}
 		
 		function makeMoveCopyTargetChoices(items, userData, isCopy) {
@@ -1040,9 +1044,20 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 					});
 				} 
 			},
-			visibleWhen: canCreateProject
+			visibleWhen: function(item) {
+				item = forceSingleItem(item);
+				return canCreateProject(item.Location);
+			}
 		});
-		commandService.addCommand(newProjectCommand);
+		commandService.addCommand(newProjectCommand);	
+
+		var createProjectFunction = function(name, path) {
+			var deferred = fileClient.createProject(getWorkspaceLocation(), name, path, true);
+			progressService.showWhile(deferred, i18nUtil.formatMessage(messages["Linking to ${0}"], path)).then(function(newFolder) {
+				dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: newFolder }); //$NON-NLS-0$
+				window.location.href = require.toUrl("edit/edit.html") +"#" + newFolder.ContentLocation;
+			}, errorHandler);
+		};
 		
 		var linkProjectCommand = new mCommands.Command({
 			name: messages["Link to Server"],
@@ -1052,21 +1067,15 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 			id: "orion.new.linkProject", //$NON-NLS-0$
 			parameters: new mCommandRegistry.ParametersDescription([new mCommandRegistry.CommandParameter('name', 'text', messages['Name:'], messages['New Folder']), new mCommandRegistry.CommandParameter('url', 'url', messages['Server path:'], '')]), //$NON-NLS-5$ //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
 			callback: function(data) {
-				var createFunction = function(name, url) {
-					if (name && url) {
-						var deferred = fileClient.createProject(explorer.treeRoot.ChildrenLocation, name, url, true);
-						progressService.showWhile(deferred, i18nUtil.formatMessage(messages["Linking to ${0}"], url)).then(function(newFolder) {
-							dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: newFolder }); //$NON-NLS-0$
-						}, errorHandler);
-					}
-				};
 				if (data.parameters && data.parameters.valueFor('name') && data.parameters.valueFor('url')) { //$NON-NLS-1$ //$NON-NLS-0$
-					createFunction(data.parameters.valueFor('name'), data.parameters.valueFor('url')); //$NON-NLS-1$ //$NON-NLS-0$
+					createProjectFunction(data.parameters.valueFor('name'), data.parameters.valueFor('url')); //$NON-NLS-1$ //$NON-NLS-0$
 				} else {
 					errorHandler(messages["NameLocationNotClear"]);
 				}
 			},
-			visibleWhen: canCreateProject
+			visibleWhen: function(item) {
+				return canCreateProject(getWorkspaceLocation());
+			}
 		});
 		commandService.addCommand(linkProjectCommand);
 		
@@ -1092,20 +1101,14 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 				imageClass: "core-sprite-link", //$NON-NLS-0$
 				id: "orion.new.autoLinkProject", //$NON-NLS-0$
 				callback: function(data) {
-					var createFunction = function(name, path) {
-						if (name && path) {
-							var deferred = fileClient.createProject(explorer.treeRoot.ChildrenLocation, name, path, true);
-							progressService.showWhile(deferred, i18nUtil.formatMessage(messages["Linking to ${0}"], path)).then(function(newFolder) {
-								dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: newFolder }); //$NON-NLS-0$
-							}, errorHandler);
-						} else {
-							errorHandler(i18nUtil.formatMessage("Could not link to folder with name '${0}' and path '${1}'", name, path));
-						}
-					};
-					createFunction(name, path);
+					if (name && path) {
+						createProjectFunction(name, path);
+					} else {
+						errorHandler(messages["AutoLinkNameOrPathNotDefined"]);
+					}
 				},
 				visibleWhen: function(item) { 
-					return canCreateProject(item) && name && path;
+					return name && path && canCreateProject(getWorkspaceLocation());
 				}
 			});
 			commandService.addCommand(autoLinkProjectCommand);
