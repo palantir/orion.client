@@ -1413,6 +1413,7 @@ var exports = {};
 			id : "eclipse.createGitProject", //$NON-NLS-0$
 			callback : function(data) {
 				var item = data.items;
+				console.error("cloneCommand1");
 				
 				var gitService = serviceRegistry.getService("orion.git.provider"); //$NON-NLS-0$
 				var progress = serviceRegistry.getService("orion.page.progress"); //$NON-NLS-0$
@@ -1479,7 +1480,6 @@ var exports = {};
 								return;
 							}
 						}	
-						
 						cloneFunction(item.url, null, item.projectDescription.name);	
 					});
 				}
@@ -1491,6 +1491,7 @@ var exports = {};
 		commandService.addCommand(createGitProjectCommand);
 		
 		var cloneCallback = function(data) {
+			console.error("cloneCommand2");
 			var item = data.items;
 			
 			var gitService = serviceRegistry.getService("orion.git.provider"); //$NON-NLS-0$
@@ -1552,6 +1553,7 @@ var exports = {};
 			id : "eclipse.initGitRepository", //$NON-NLS-0$
 			parameters: initRepositoryParameters,
 			callback : function(data) {
+				console.error("initGit");
 				var item = data.items;
 				
 				var gitService = serviceRegistry.getService("orion.git.provider"); //$NON-NLS-0$
