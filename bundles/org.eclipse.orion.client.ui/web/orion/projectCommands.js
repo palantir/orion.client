@@ -1178,6 +1178,8 @@ define(['require', 'i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 
 						}
 						progress.showWhile(handler.initProject(params, {WorkspaceLocation: item.Location}), actionComment).then(function(project){
 							dispatchNewProject(item, project);
+							window.location.href = require.toUrl("edit/edit.html") + "#" + project.ContentLocation;
+							window.location.reload();
 						}, function(error){
 							if(error.Retry && error.Retry.addParameters){
 								var options = {
