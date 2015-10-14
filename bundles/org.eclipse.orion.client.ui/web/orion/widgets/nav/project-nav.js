@@ -347,7 +347,9 @@ define([
 			sidebar.sidebarNavInputManager.addEventListener("projectDisplayed", handleDisplay); //$NON-NLS-0$
 		}
 		this.editorInputManager.addEventListener("InputChanged", function(event) { //$NON-NLS-0$
-			if (!sidebar.getActiveViewModeId()){
+			_self.lastCheckedLocation = event.metadata.Location;
+			_self.showViewMode(false);
+			if (!sidebar.getActiveViewModeId()) {
 				sidebar.setViewMode(sidebar.getNavigationViewMode().id);
 			}
 		});

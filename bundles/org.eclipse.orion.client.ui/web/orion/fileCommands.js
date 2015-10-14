@@ -1054,8 +1054,9 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 		var createProjectFunction = function(name, path) {
 			var deferred = fileClient.createProject(getWorkspaceLocation(), name, path, true);
 			progressService.showWhile(deferred, i18nUtil.formatMessage(messages["Linking to ${0}"], path)).then(function(newFolder) {
-				dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: newFolder }); //$NON-NLS-0$
-				window.location.href = require.toUrl("edit/edit.html") +"#" + newFolder.ContentLocation;
+				return fileClient.read(newFolder.ContentLocation, true);
+			}, errorHandler).then(function(folderDetails) {
+				dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: folderDetails});
 			}, errorHandler);
 		};
 		
