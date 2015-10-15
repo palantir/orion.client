@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="copyright" content="Copyright (c) IBM Corporation and others 2011." >
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<script src="../requirejs/require.js"></script>
+	<script type="text/javascript">
+		/*eslint-env browser, amd*/
+		require({
+		  baseUrl: '../',
+		  // set the paths to our library packages
+		  packages: [],
+		  paths: {
+		    text: 'requirejs/text',
+		    i18n: 'requirejs/i18n',
+		    domReady: 'requirejs/domReady'
+		  }
+		});
+		require(["plugins/mesaPlugin"], function(plugin) {
+            plugin.connect();
+        });
+		</script>
+</head>
+<body>
+    <h2>Orion Mesa Support</h2>
+</body>
+</html>

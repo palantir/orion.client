@@ -23,7 +23,8 @@ define([
 	"plugins/taskPlugin",
 	"plugins/webEditingPlugin",
 	"profile/userservicePlugin",
-	"plugins/helpPlugin"
+	"plugins/helpPlugin",
+	"shell/plugins/shellPagePlugin"
 ], function(PluginProvider, common) {
 	var plugins = Array.prototype.slice.call(arguments);
 	plugins.shift(); // skip plugin

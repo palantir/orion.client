@@ -1,0 +1,23 @@
+@import "../../../css/layout.css";
+@import "../../../css/ide.css";
+@import "../../../css/images.css";
+@import "../../../css/theme.css";
+@import "../../../edit/common.css";
+
+html,body {
+    height: 100%;
+}
+
+#mesaTable {
+  padding: 20px;
+  font-family: Monaco;
+  font-size: "18px";
+}
+
+.diffResult {
+  padding-bottom: 30px;
+}
+
+.toolbarTarget {
+    overflow: hidden;
+}
