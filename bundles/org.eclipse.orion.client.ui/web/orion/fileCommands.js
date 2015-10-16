@@ -13,11 +13,15 @@
 /*global confirm*/
 
 define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18nUtil', 'orion/uiUtils', 'orion/fileUtils', 'orion/commands', 'orion/fileDownloader',
-	'orion/commandRegistry', 'orion/contentTypes', 'orion/compare/compareUtils', 
+	'orion/commandRegistry', 'orion/contentTypes', 'orion/compare/compareUtils', 'orion/git/gitClient', 'orion/git/util', 'orion/serviceregistry', 'orion/ssh/sshTools', 
 	'orion/Deferred', 'orion/webui/dialogs/DirectoryPrompterDialog', 'orion/webui/dialogs/SFTPConnectionDialog',
 	'orion/EventTarget', 'orion/form', 'orion/xhr', 'orion/xsrfUtils'],
 	function(messages, lib, i18nUtil, mUIUtils, mFileUtils, mCommands, mFileDownloader, mCommandRegistry,
-			mContentTypes, mCompareUtils, Deferred, DirPrompter, SFTPDialog, EventTarget, form, xhr, xsrfUtils){
+			mContentTypes, mCompareUtils, mGitClient, mGitUtil, mServiceRegistry, mSshTools, Deferred, DirPrompter, SFTPDialog, EventTarget, form, xhr, xsrfUtils){
+
+	var serviceRegistry = new mServiceRegistry.ServiceRegistry();
+	var gitClient = new mGitClient.GitService(serviceRegistry);
+	var sshService = new mSshTools.SshService(serviceRegistry);
 
 	/**
 	 * Utility methods
@@ -1070,27 +1074,31 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 		});
 		commandService.addCommand(linkProjectCommand);
 		
-		var FOLDER_NAME_KEY = "plugin.autolink.folder.name";
-		var PATH_NAME_KEY = "plugin.autolink.path";
+		var AUTOLINK_FOLDER_KEY = "plugin.autolink.folder.name";
+		var AUTOLINK_PATH_KEY = "plugin.autolink.path";
+		var AUTOCLONE_GIT_KEY = "plugin.autoclone.urls";
 		xhr("POST", "/config", {
 			headers: {
 				"Orion-Version": "1"
 			},
 			data: JSON.stringify({
-				"configKeys": [FOLDER_NAME_KEY, PATH_NAME_KEY]
+				"configKeys": [AUTOLINK_FOLDER_KEY, AUTOLINK_PATH_KEY,
+								AUTOCLONE_GIT_KEY]
 			}),
 			timeout: 15000,
 			log: false
 		}).then(function(result) {
-			var name = JSON.parse(result.response)[FOLDER_NAME_KEY];
-			var path = JSON.parse(result.response)[PATH_NAME_KEY];
+			var resultJson = JSON.parse(result.response);
+			var name = resultJson[AUTOLINK_FOLDER_KEY];
+			var path = resultJson[AUTOLINK_PATH_KEY];
+			var gitUrls = resultJson[AUTOCLONE_GIT_KEY].split(",");
 			
-			var autoLinkProjectCommand = new mCommands.Command({
-				name: "Auto-link to Server",
-				tooltip: "Link to pre-configured content on the server",
+			var autoAddProjectsCommand = new mCommands.Command({
+				name: "Auto-import projects",
+				tooltip: "Import pre-configured content on the server",
 				description: messages["CreateLinkedFolder"],
 				imageClass: "core-sprite-link", //$NON-NLS-0$
-				id: "orion.new.autoLinkProject", //$NON-NLS-0$
+				id: "orion.new.autoImportProjects", //$NON-NLS-0$
 				callback: function(data) {
 					var createFunction = function(name, path) {
 						if (name && path) {
@@ -1098,6 +1106,24 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 							progressService.showWhile(deferred, i18nUtil.formatMessage(messages["Linking to ${0}"], path)).then(function(newFolder) {
 								dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: newFolder }); //$NON-NLS-0$
 							}, errorHandler);
+							deferred.then(function() {
+								if (gitUrls) {
+									for (var i = 0; i < gitUrls.length; i++) {
+										var gitUrl = gitUrls[i];
+										var repositoryURL = mGitUtil.parseSshGitUrl(gitUrl);
+										gitClient.cloneGitRepository(null, gitUrl, null, explorer.treeRoot.ChildrenLocation, null, null, null, null, null, null, true).then(function(cloneResp){
+											gitClient.getGitClone(cloneResp.Location).then(function(clone){
+												if(clone.Children){
+													clone = clone.Children[0];
+												}
+												var gitInfo = parseGitUrl(clone.GitUrl);
+											});
+										}, function(error) {
+											errorHandler(error);
+										});
+									}
+								}
+							})
 						} else {
 							errorHandler(i18nUtil.formatMessage("Could not link to folder with name '${0}' and path '${1}'", name, path));
 						}
@@ -1105,10 +1131,10 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 					createFunction(name, path);
 				},
 				visibleWhen: function(item) { 
-					return canCreateProject(item) && name && path;
+					return canCreateProject(item) && ((name && path) || gitUrls);
 				}
 			});
-			commandService.addCommand(autoLinkProjectCommand);
+			commandService.addCommand(autoAddProjectsCommand);
 		}, function(error) {
 			errorHandler(error);
 		});
