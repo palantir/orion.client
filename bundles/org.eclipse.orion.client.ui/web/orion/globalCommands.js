@@ -688,6 +688,7 @@ define([
 					main: main
 				};
 				mainSplitter.splitter = new mSplitter.Splitter({
+					id: "navEdit",
 					node: splitNode,
 					sidePanel: side,
 					mainPanel: main,
@@ -704,6 +705,28 @@ define([
 				});
 				commandRegistry.addCommand(toggleSidePanelCommand);
 				commandRegistry.registerCommandContribution("pageActions", "orion.toggleSidePane", 1, null, true, new KeyBinding.KeyBinding('l', util.isMac ? false : true, true, false, util.isMac ? true : false)); //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
+			}
+		}
+		
+		var splitEditConsole = lib.$(".splitEditConsole");
+		if (splitEditConsole) {
+			var top = lib.$(".topPanelLayout"); //$NON-NLS-0$
+			var bot = lib.$(".botPanelLayout"); //$NON-NLS-0$
+			if (top && bot) {
+				mainSplitter = {
+					side: top,
+					main: bot
+				};
+				mainSplitter.splitter = new mSplitter.Splitter({
+					id: "editConsole",
+					node: splitEditConsole,
+					sidePanel: top,
+					mainPanel: bot,
+					vertical: true,
+					toggle: true,
+					closeReversely: true,
+					closeByDefault: true
+				});
 			}
 		}
 

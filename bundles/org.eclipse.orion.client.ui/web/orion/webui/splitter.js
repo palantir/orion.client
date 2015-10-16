@@ -46,10 +46,12 @@ define([
 	 * @param {Element} options.node The node for the splitter presentation.  Required.
 	 * @param {Element} options.sidePanel The node for the side (toggling) panel.  Required.
 	 * @param {Element} options.mainPanel The node for the main panel.  Required.
+	 * @param {String} [options.id=""] Specifies an id for this splitter. Should be unique among all splitters on the page.
 	 * @param {Boolean} [options.toggle=false] Specifies that the side node should be able to toggle.
 	 * @param {Boolean} [options.vertical=false] Specifies that the nodes are stacked vertically rather than horizontal.
 	 * @param {Boolean} [options.closeReversely=false] Specifies that the splitter moves to right when nodes are stacked horizontally, or to bottom when nodes are stacked vertically.
 	 * @param {Boolean} [options.proportional=false] Specifies that the splitter is proportional so that growing the browser allocates space to both nodes.
+	 * @param {Boolean} [options.closeByDefault=false] Specifies that the side node should be toggled off by default.
 	 *
 	 * @borrows orion.editor.EventTarget#addEventListener as #addEventListener
 	 * @borrows orion.editor.EventTarget#removeEventListener as #removeEventListener
@@ -73,8 +75,9 @@ define([
 			this._animationDelay = 501;  // longer than CSS transitions in layout.css
 			this._collapseTrailing = options.closeReversely || false;
 			this._proportional = options.proportional || false;
+			this._closeByDefault = options.closeByDefault || false;
 
-			this._prefix = "/orion/splitter/" + (this.$splitter.id || document.body.id || "");  //$NON-NLS-0$
+			this._prefix = "/orion/splitter/" + (options.id || this.$splitter.id || document.body.id || "");  //$NON-NLS-0$
 			
 			if (options.toggle) {
 				this._thumb = document.createElement("div"); //$NON-NLS-0$
