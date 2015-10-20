@@ -13,11 +13,14 @@
 /*global confirm*/
 
 define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18nUtil', 'orion/uiUtils', 'orion/fileUtils', 'orion/commands', 'orion/fileDownloader',
-	'orion/commandRegistry', 'orion/contentTypes', 'orion/compare/compareUtils', 
+	'orion/commandRegistry', 'orion/contentTypes', 'orion/compare/compareUtils', 'orion/git/gitClient', 'orion/git/util', 'orion/serviceregistry',
 	'orion/Deferred', 'orion/webui/dialogs/DirectoryPrompterDialog', 'orion/webui/dialogs/SFTPConnectionDialog',
-	'orion/EventTarget', 'orion/form', 'orion/xhr', 'orion/xsrfUtils', 'require'],
+	'orion/EventTarget', 'orion/form', 'orion/xhr', 'orion/xsrfUtils'],
 	function(messages, lib, i18nUtil, mUIUtils, mFileUtils, mCommands, mFileDownloader, mCommandRegistry,
-			mContentTypes, mCompareUtils, Deferred, DirPrompter, SFTPDialog, EventTarget, form, xhr, xsrfUtils, require){
+			mContentTypes, mCompareUtils, mGitClient, mGitUtil, mServiceRegistry, Deferred, DirPrompter, SFTPDialog, EventTarget, form, xhr, xsrfUtils){
+
+	var serviceRegistry = new mServiceRegistry.ServiceRegistry();
+	var gitClient = new mGitClient.GitService(serviceRegistry);
 
 	/**
 	 * Utility methods
@@ -1080,42 +1083,51 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 		});
 		commandService.addCommand(linkProjectCommand);
 		
-		var FOLDER_NAME_KEY = "plugin.autolink.folder.name";
-		var PATH_NAME_KEY = "plugin.autolink.path";
+		var AUTOLINK_FOLDER_KEY = "plugin.autolink.folder.name";
+		var AUTOLINK_PATH_KEY = "plugin.autolink.path";
+		var AUTOCLONE_GIT_KEY = "plugin.autoclone.url";
 		xhr("POST", "/config", {
 			headers: {
 				"Orion-Version": "1"
 			},
 			data: JSON.stringify({
-				"configKeys": [FOLDER_NAME_KEY, PATH_NAME_KEY]
+				"configKeys": [AUTOLINK_FOLDER_KEY, AUTOLINK_PATH_KEY, AUTOCLONE_GIT_KEY]
 			}),
 			timeout: 15000,
 			log: false
 		}).then(function(result) {
-			var name = JSON.parse(result.response)[FOLDER_NAME_KEY];
-			var path = JSON.parse(result.response)[PATH_NAME_KEY];
-			
-			var autoLinkProjectCommand = new mCommands.Command({
-				name: "Auto-link to Server",
-				tooltip: "Link to pre-configured content on the server",
+			var resultJson = JSON.parse(result.response);
+			var name = resultJson[AUTOLINK_FOLDER_KEY];
+			var path = resultJson[AUTOLINK_PATH_KEY];
+			var gitUrl = resultJson[AUTOCLONE_GIT_KEY];
+
+			var autoImportProjectCommand = new mCommands.Command({
+				name: "Auto-import projects",
+				tooltip: "Import pre-configured content on the server",
 				description: messages["CreateLinkedFolder"],
 				imageClass: "core-sprite-link", //$NON-NLS-0$
-				id: "orion.new.autoLinkProject", //$NON-NLS-0$
+				id: "orion.new.autoImportProject", //$NON-NLS-0$
 				callback: function(data) {
 					if (name && path) {
 						createProjectFunction(name, path);
-					} else {
-						errorHandler(messages["AutoLinkNameOrPathNotDefined"]);
+					}
+					if (gitUrl) {
+						gitClient.cloneGitRepository(null, gitUrl, null, explorer.treeRoot.ChildrenLocation, null, null, null, null, null, null, true).then(function(cloneResp) {
+							return gitClient.getGitClone(cloneResp.Location);
+						}, errorHandler).then(function(clone) {
+							clone = clone.Children[0] ? clone.Children[0] : clone;
+							return fileClient.read(clone.ContentLocation, true);
+						}, errorHandler).then(function(folderDetails) {
+							dispatchModelEventOn({type: "create", parent: explorer.treeRoot, newValue: folderDetails}); //$NON-NLS-0$
+						}, errorHandler);
 					}
 				},
 				visibleWhen: function(item) { 
-					return name && path && canCreateProject(getWorkspaceLocation());
+					return (gitUrl || (name && path)) && canCreateProject(getWorkspaceLocation());
 				}
 			});
-			commandService.addCommand(autoLinkProjectCommand);
-		}, function(error) {
-			errorHandler(error);
-		});
+			commandService.addCommand(autoImportProjectCommand);
+		}, errorHandler);
 
 		var goUpCommand = new mCommands.Command({
 			name: messages["Go Up"],
