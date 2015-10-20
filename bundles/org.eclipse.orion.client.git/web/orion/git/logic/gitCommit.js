@@ -50,7 +50,7 @@ function(messages, Deferred, mGitCommon, i18nUtil) {
 						if(config.Children[i].Key===key){
 							found = true;
 							var locationToUpdate = config.Children[i].Location;
-							gitService.editCloneConfigurationProperty(locationToUpdate,value).then(deferred.resolve, deferred.reject);
+							gitService.editCloneConfigurationProperty(locationToUpdate,[value]).then(deferred.resolve, deferred.reject);
 							break;
 						}
 					}
