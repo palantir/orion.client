@@ -1102,7 +1102,7 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 			var gitUrl = resultJson[AUTOCLONE_GIT_KEY];
 
 			var autoImportProjectCommand = new mCommands.Command({
-				name: "Auto-import Projects",
+				name: "Auto-import projects",
 				tooltip: "Import pre-configured content on the server",
 				description: messages["CreateLinkedFolder"],
 				imageClass: "core-sprite-link", //$NON-NLS-0$
