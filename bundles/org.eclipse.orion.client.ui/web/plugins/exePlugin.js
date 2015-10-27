@@ -27,28 +27,24 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 
 		var serviceImpl = {
 				getExeResult: function(command, fileLocation) {
-					var uri = ".." + fileLocation.replace("file", "exe") + "?command=" + command; //$NON-NLS-0$
+					var uri = ".." + fileLocation.replace("/file/", "/exe/").replace("/workspace/", "/exe/") + "?command=" + command; //$NON-NLS-0$
 					return getResponse(uri);
 				}
 		};
 		var serviceProperties = {
-				name: "Exe",
+				name: "Exe", //$NON-NLS-0$
 		};
 
-		var runImpl = {
+		var doctestImpl = {
 				callback: function(args, context) {
 					var fileLocation = (args.file.path.indexOf("/file") == 0) ? args.file.path : context.cwd + args.file.path; //$NON-NLS-0$
-					return serviceImpl.getExeResult(args.command, fileLocation);
+					return serviceImpl.getExeResult("doctest", fileLocation); //$NON-NLS-0$
 				}
 		};
-		var runProperties = {
-				name: "run", //$NON-NLS-0$
-				description: "Run a command",
+		var doctestProperties = {
+				name: "doctest", //$NON-NLS-0$
+				description: "Run python doctest",
 				parameters: [{
-					name: "command", //$NON-NLS-0$
-					type: {name: "string"}, //$NON-NLS-0$
-					description: "Command"
-						}, {
 					name: "file", //$NON-NLS-0$
 					type: {name: "file", file: true, exist: true}, //$NON-NLS-0$
 					description: "File name"
@@ -56,8 +52,20 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 				returnType: "string" //$NON-NLS-0$
 		};
 
+		var cancelImpl = {
+				callback: function(args, context) {
+					return serviceImpl.getExeResult("cancel", context.cwd); //$NON-NLS-0$
+				}
+		};
+		var cancelProperties = {
+				name: "cancel", //$NON-NLS-0$
+				description: "Cancel running task",
+				returnType: "string" //$NON-NLS-0$
+		};
+
 		provider.registerService("orion.exe", serviceImpl, serviceProperties);
-		provider.registerServiceProvider("orion.shell.command", runImpl, runProperties);
+		provider.registerServiceProvider("orion.shell.command", doctestImpl, doctestProperties);
+		provider.registerServiceProvider("orion.shell.command", cancelImpl, cancelProperties);
 	}
 
 	return {
