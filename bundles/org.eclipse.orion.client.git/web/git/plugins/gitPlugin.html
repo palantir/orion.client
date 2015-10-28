@@ -8,7 +8,9 @@
 		/*eslint-env browser, amd*/	
 		require(["../../orion/require-config.js"], function(config){
 			require.config({baseUrl: "../.."});
-			require(["git/plugins/gitPlugin"], null, config.errback);
+			require(["git/plugins/gitPlugin"], function(provider) {
+				provider.connect();
+			}, config.errback);
 		});
 	</script>
 </head>

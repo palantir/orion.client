@@ -19,19 +19,42 @@ define(['orion/PageUtil', 'orion/xsrfUtils', 'orion/PageLinks', 'orion/xhr', './
       if (!hasClass(ele,cls)) ele.className += " "+cls;
     }
 
-    function getAuthProvider() {
-        return getRedirectInfo().then(function(result) {
+    function getAuthProvider(levels) {
+        return getRedirectInfo(levels).then(function(result) {
             return JSON.parse(result.response).AuthProvider;
         });
     }
 
-    function getRedirectInfo() {
-        return xhr("POST", "../login/redirectinfo", { //$NON-NLS-0$
-            headers: {
-                "Orion-Version": "1" //$NON-NLS-0$
-            },
-            timeout: 15000
-        });
+	function getLoginHref(levels) {
+		return getAuthProvider(levels).then(function(provider) {
+			var prefix = getPrefix(levels);
+			if (provider) {
+				return new URL(prefix + "/login/oauth?oauth=" + provider, self.location.href).href;
+			} else {
+				return new URL(prefix + "/mixloginstatic/LoginWindow.html", self.location.href).href;
+			}
+		});
+	}
+
+	function getPrefix(levels) {
+		var prefix = "";
+		while (levels > 1) {
+			prefix += "../";
+			levels--;
+		}
+		if (levels === 1) {
+			prefix += "..";
+		}
+		return prefix;
+	}
+
+    function getRedirectInfo(levels) {
+	    return xhr("POST", getPrefix(levels) + "/login/redirectinfo", { //$NON-NLS-0$
+	        headers: {
+	            "Orion-Version": "1" //$NON-NLS-0$
+	        },
+	        timeout: 15000
+	    });
     }
 
     function redirectIfAuthProviderIsSet() {
@@ -404,6 +427,7 @@ define(['orion/PageUtil', 'orion/xsrfUtils', 'orion/PageLinks', 'orion/xhr', './
         createOAuthLink: createOAuthLink,
         decodeBase64: decodeBase64,
         getAuthProvider: getAuthProvider,
+        getLoginHref: getLoginHref,
         getParam: getParam,
         getRedirect: getRedirect,
         passwordSwitcher: passwordSwitcher,

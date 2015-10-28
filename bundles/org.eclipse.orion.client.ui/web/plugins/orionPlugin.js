@@ -30,13 +30,7 @@ define([
 	plugins.shift(); // skip common
 
 	function connect(pluginProvider) {
-		common.getAuthProvider().then(function(provider) {
-			if (provider) {
-				var login = new URL("../login/oauth?oauth=" + provider, self.location.href).href;
-			} else {
-				var login = new URL("../mixloginstatic/LoginWindow.html", self.location.href).href;
-			}
-
+		common.getLoginHref(1).then(function(login) {
 			var headers = {
 				name: "Orion Core Support",
 				version: "1.0",

@@ -39,6 +39,13 @@ define(['orion/Deferred', 'orion/xhr'], function(Deferred, xhr){
 								timeout: 15000
 							}).then(function(result) {
 								loginData = result.response ? JSON.parse(result.response) : null;
+								if (loginData == null) {
+									var d = new Deferred();
+									d.reject({
+										status: 401
+									});
+									return d;
+								}
 								return loginData;
 							}, function(error) {
 								loginData = null;
