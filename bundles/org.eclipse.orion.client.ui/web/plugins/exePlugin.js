@@ -17,7 +17,6 @@ define(["orion/xhr", "orion/plugin", "domReady!"], function(xhr, PluginProvider)
 				headers: {
 					"Orion-Version": "1" //$NON-NLS-0$
 				},
-				timeout: 15000
 			}).then(function(result) {
 				return result.response;
 			}, function(error) {
