@@ -43,9 +43,7 @@ define([
 			pluginProvider = pluginProvider || new PluginProvider();
 			pluginProvider.updateHeaders(headers);
 			var registerPromise = registerServiceProviders(pluginProvider);
-			registerPromise.then(function() {
-				pluginProvider.connect();
-			});
+			registerPromise.then(pluginProvider.connect);
 		});
 	}
 
@@ -60,7 +58,7 @@ define([
 		// lazy evaluation of promises, i.e. do not short circuit to 
 		// a failure if any one of the promise fails. We still want
 		// to connect to the other providers
-		return Deferred.all(promises, function(e) { console.log(e); });
+		return Deferred.all(promises, console.log);
 	}
 
 	return {

@@ -34,7 +34,7 @@ define([
 
 	function getEnableShell() {
 		var EXE_KEY = "plugin.execution.enabled"
-		return xhr("POST", "/config", {
+		return xhr("POST", "../config", {
 			headers: {
 				"Orion-Version": "1"
 			},
