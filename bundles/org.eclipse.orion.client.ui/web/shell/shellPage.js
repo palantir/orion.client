@@ -909,10 +909,6 @@ define(["require", "i18n!orion/shell/nls/messages", "orion/bootstrap", "orion/co
 		/* add the locally-defined types */
 		fileType = new mFileParamType.ParamTypeFile(shellPageFileService);
 		shell.registerType(fileType);
-		pluginType = new mPluginParamType.ParamTypePlugin(pluginRegistry);
-		shell.registerType(pluginType);
-		var serviceType = new mServiceParamType.ParamTypeService(pluginRegistry);
-		shell.registerType(serviceType);
 
 		/* add the locally-defined commands */
 		shell.registerCommand({
@@ -954,102 +950,6 @@ define(["require", "i18n!orion/shell/nls/messages", "orion/bootstrap", "orion/co
 			callback: function(args, context) {
 				shell.clear();
 			}
-		});
-
-		/* plug-in management commands */
-		shell.registerCommand({
-			name: "plugins", //$NON-NLS-0$
-			description: messages["CmdForPlugs"]
-		});
-		shell.registerCommand({
-			name: "plugins list", //$NON-NLS-0$
-			description: messages["RegisteredPlugsList"],
-			callback: pluginsListExec,
-			returnType: "html" //$NON-NLS-0$
-		});
-		shell.registerCommand({
-			name: "plugins install", //$NON-NLS-0$
-			description: messages["InstallPlugFrmURL"],
-			callback: pluginsInstallExec,
-			parameters: [{
-				name: "url", //$NON-NLS-0$
-				type: "string", //$NON-NLS-0$
-				description: messages["The plug-in URL"]
-			}],
-			returnType: "string" //$NON-NLS-0$
-		});
-		shell.registerCommand({
-			name: "plugins uninstall", //$NON-NLS-0$
-			description: messages["UninstallContributedPlugFrmConfig"],
-			callback: pluginsUninstallExec,
-			parameters: [{
-				name: "plugin", //$NON-NLS-0$
-				type: {name: "plugin", multiple: true, excludeDefaultPlugins: true}, //$NON-NLS-0$
-				description: messages["ContributedPlugName"]
-			}],
-			returnType: "string" //$NON-NLS-0$
-		});
-		shell.registerCommand({
-			name: "plugins reload", //$NON-NLS-0$
-			description: messages["Reloads a plug-in"],
-			callback: pluginsReloadExec,
-			parameters: [{
-				name: "plugin", //$NON-NLS-0$
-				type: {name: "plugin", multiple: true, excludeDefaultPlugins: false}, //$NON-NLS-0$
-				description: messages["PlugName"]
-			}],
-			returnType: "string" //$NON-NLS-0$
-		});
-		shell.registerCommand({
-			name: "plugins enable", //$NON-NLS-0$
-			description: messages["EnableContributedPlug"],
-			callback: pluginsEnableExec,
-			parameters: [{
-				name: "plugin", //$NON-NLS-0$
-				type: {name: "plugin", multiple: true, excludeDefaultPlugins: true}, //$NON-NLS-0$
-				description: messages["ContributedPlugName"]
-			}],
-			returnType: "string" //$NON-NLS-0$
-		});
-		shell.registerCommand({
-			name: "plugins disable", //$NON-NLS-0$
-			description: messages["DisableContributedPlug"],
-			callback: pluginsDisableExec,
-			parameters: [{
-				name: "plugin", //$NON-NLS-0$
-				type: {name: "plugin", multiple: true, excludeDefaultPlugins: true}, //$NON-NLS-0$
-				description: messages["ContributedPlugName"]
-			}],
-			returnType: "string" //$NON-NLS-0$
-		});
-		shell.registerCommand({
-			name: "plugins services", //$NON-NLS-0$
-			description: messages["DisplayPlugServices"],
-			callback: pluginServicesExec,
-			parameters: [{
-				name: "plugin", //$NON-NLS-0$
-				type: {name: "plugin", multiple: false, excludeDefaultPlugins: false}, //$NON-NLS-0$
-				description: messages["PlugName"]
-			}],
-			returnType: "html" //$NON-NLS-0$
-		});
-
-		/* service management commands */
-		shell.registerCommand({
-			name: "service", //$NON-NLS-0$
-			description: messages["CmdsForService"]
-		});
-
-		shell.registerCommand({
-			name: "service contributors", //$NON-NLS-0$
-			description: messages["DisplayPlugsForService"],
-			callback: serviceContributorsExec,
-			parameters: [{
-				name: "id", //$NON-NLS-0$
-				type: "service", //$NON-NLS-0$
-				description: messages["The service identifier"]
-			}],
-			returnType: "html" //$NON-NLS-0$
 		});
 
 		/* initialize the editors cache (used by some of the built-in commands */

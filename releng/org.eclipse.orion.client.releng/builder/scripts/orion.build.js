@@ -77,11 +77,6 @@
     modules: (function() {
         var modules = [
             { name: "index" },
-            { name: "cfui/apps" },
-            { name: "cfui/logs" },
-            { name: "cfui/plugins/cFDeployService" },
-            { name: "cfui/plugins/cFPlugin" },
-            { name: "cfui/plugins/wizards/generic/genericDeploymentWizard" },
             { name: "compare/compare" },
             { name: "edit/content/imageViewerPlugin" },
             { name: "edit/content/jsonEditorPlugin" },

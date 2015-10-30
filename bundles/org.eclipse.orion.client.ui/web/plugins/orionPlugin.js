@@ -11,6 +11,7 @@
 
 /*eslint-env browser, amd*/
 define([
+	"orion/Deferred",
 	"orion/plugin",
 	"../mixloginstatic/javascript/common",
 	"plugins/authenticationPlugin",
@@ -23,9 +24,11 @@ define([
 	"plugins/taskPlugin",
 	"plugins/webEditingPlugin",
 	"profile/userservicePlugin",
-	"plugins/helpPlugin"
-], function(PluginProvider, common) {
+	"plugins/helpPlugin",
+	"shell/plugins/shellPagePlugin"
+], function(Deferred, PluginProvider, common) {
 	var plugins = Array.prototype.slice.call(arguments);
+	plugins.shift(); // skip Deferred
 	plugins.shift(); // skip plugin
 	plugins.shift(); // skip common
 
@@ -39,15 +42,25 @@ define([
 			};
 			pluginProvider = pluginProvider || new PluginProvider();
 			pluginProvider.updateHeaders(headers);
-			registerServiceProviders(pluginProvider);
-			pluginProvider.connect();
+			var registerPromise = registerServiceProviders(pluginProvider);
+			registerPromise.then(function() {
+				pluginProvider.connect();
+			});
 		});
 	}
 
 	function registerServiceProviders(provider) {
+		var promises = [];
 		plugins.forEach(function(plugin) {
-			plugin.registerServiceProviders(provider);
+			var promise = plugin.registerServiceProviders(provider);
+			if (promise) {
+				promises.push(promise);
+			}
 		});
+		// lazy evaluation of promises, i.e. do not short circuit to 
+		// a failure if any one of the promise fails. We still want
+		// to connect to the other providers
+		return Deferred.all(promises, function(e) { console.log(e); });
 	}
 
 	return {
