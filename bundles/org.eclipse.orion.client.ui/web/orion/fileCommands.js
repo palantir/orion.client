@@ -1086,7 +1086,7 @@ define(['i18n!orion/navigate/nls/messages', 'orion/webui/littlelib', 'orion/i18n
 		var AUTOLINK_FOLDER_KEY = "plugin.autolink.folder.name";
 		var AUTOLINK_PATH_KEY = "plugin.autolink.path";
 		var AUTOCLONE_GIT_KEY = "plugin.autoclone.url";
-		xhr("POST", "/config", {
+		xhr("POST", "../config", {
 			headers: {
 				"Orion-Version": "1"
 			},
