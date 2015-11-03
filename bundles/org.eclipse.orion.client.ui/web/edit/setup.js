@@ -47,13 +47,15 @@ define([
 	'orion/Deferred',
 	'orion/projectClient',
 	'orion/webui/splitter',
-	'orion/webui/tooltip'
+	'orion/webui/tooltip',
+	'orion/console/console',
+	'orion/exe/python/runDoctest'
 ], function(
 	messages, Sidebar, mInputManager, mCommands, mGlobalCommands,
 	mTextModel, mUndoStack,
 	mFolderView, mEditorView, mPluginEditorView , mMarkdownView, mMarkdownEditor,
 	mCommandRegistry, mContentTypes, mFileClient, mFileCommands, mEditorCommands, mSelection, mStatus, mProgress, mOperationsClient, mOutliner, mDialogs, mExtensionCommands, ProjectCommands, mSearchClient,
-	EventTarget, URITemplate, i18nUtil, PageUtil, objects, lib, Deferred, mProjectClient, mSplitter, mTooltip
+	EventTarget, URITemplate, i18nUtil, PageUtil, objects, lib, Deferred, mProjectClient, mSplitter, mTooltip, mConsole, mRunDoctest
 ) {
 
 var exports = {};
@@ -740,6 +742,22 @@ objects.mixin(EditorSetup.prototype, {
 				break;
 		}
 	},
+
+	createConsole: function() {
+		var console = new mConsole.Console({
+			inputManager: this.activeEditorViewer.inputManager,
+			serviceRegistry: this.serviceRegistry
+		});
+		this.serviceRegistry.registerService("orion.console", console, {});
+	},
+
+	createExe: function() {
+		var exe = new mRunDoctest.RunDoctest({
+			inputManager: this.activeEditorViewer.inputManager,
+			serviceRegistry: this.serviceRegistry,
+			sidebarNavInputManager: this.sidebarNavInputManager
+		});
+	},
 	
 	createEditorViewer: function(id) {
 		var editorViewer = new EditorViewer({
@@ -1049,6 +1067,8 @@ exports.setUpEditor = function(serviceRegistry, pluginRegistry, preferences, rea
 			setup.createSideBar();
 			setup.editorViewers.push(setup.createEditorViewer());
 			setup.setActiveEditorViewer(setup.editorViewers[0]);
+			setup.createConsole();
+			setup.createExe();
 			if (enableSplitEditor) {
 				setup.createSplitMenu();
 				setup.setSplitterMode(MODE_SINGLE);

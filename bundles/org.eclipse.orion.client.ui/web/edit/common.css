@@ -6,6 +6,8 @@
 
 @import "../css/sections.css"; /* for outliner */
 
+@import "../orion/console/console.css";
+
 @import "../orion/editor/editor.css";
 
 @import "../orion/webui/Slideout.css";

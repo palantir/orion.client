@@ -30,12 +30,21 @@
 						<div id="sidebar" class="dropdownTrigger toolbarTarget sidebar"></div>
 					</div>
 				</div>
-				<div class="split splitLayout" style="left: 25%;"></div>
-				<div id="rightPane" class="mainpane mainPanelLayout hasSplit">
-					<div class="fixedToolbarHolder">
-						<div id="editor" class="workingTarget"></div>
-						<div id="replaceCompareTitleDiv" class="replaceCompareTitleDiv"></div>
-						<div id="replaceCompareDiv" class="replaceCompareDiv workingTarget"></div>
+				<div class="split splitLayout"></div>
+				<div id="rightPane" class="mainPanelLayout hasSplit">
+					<div id="topPane" class="mainpane topPanelLayout hasSplit">
+						<div class="fixedToolbarHolder">
+							<div id="editor" class="workingTarget"></div>
+							<div id="replaceCompareTitleDiv" class="replaceCompareTitleDiv"></div>
+							<div id="replaceCompareDiv" class="replaceCompareDiv workingTarget"></div>
+						</div>
+					</div>
+					<div class="splitEditConsole splitLayout" data-initial-state="closed"></div>
+					<div id="bottomPane" class="auxpane botPanelLayout hasSplit">
+						<div id="console">
+							<div class="clear-console">Clear</div>
+							<ul class="console-messages"></ul>
+						</div>
 					</div>
 				</div>
 			</div>
