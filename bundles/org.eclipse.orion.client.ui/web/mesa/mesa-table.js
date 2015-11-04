@@ -10,11 +10,11 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 /*eslint-env browser, amd*/
-define(["require", "orion/xhr", "i18n!orion/shell/nls/messages", "plugins/mesa/mesaUtils", "plugins/mesa/mesaClient", "orion/bootstrap", "orion/commandRegistry", "orion/fileClient", "orion/git/gitClient", "orion/searchClient",
+define(["require", "orion/xhr", "i18n!orion/shell/nls/messages", "plugins/mesa/resourceFormatter", "plugins/mesa/mesaClient", "orion/bootstrap", "orion/commandRegistry", "orion/fileClient", "orion/git/gitClient", "orion/searchClient",
         "orion/globalCommands", "orion/shell/Shell", "orion/webui/treetable", "shell/shellPageFileService", "shell/paramType-file", "shell/paramType-plugin",
         "shell/paramType-service", "orion/i18nUtil", "orion/extensionCommands", "orion/contentTypes", "orion/PageUtil", "orion/URITemplate", "orion/Deferred",
         "orion/status", "orion/progress", "orion/operationsClient", "shell/resultWriters", "orion/metrics", "orion/URL-shim"],
-    function(require, xhr, messages, MesaUtils, mMesaClient, mBootstrap, mCommandRegistry, mFileClient, mGitClient, mSearchClient, mGlobalCommands, mShell, mTreeTable, mShellPageFileService,
+    function(require, xhr, messages, resourceFormatter, mMesaClient, mBootstrap, mCommandRegistry, mFileClient, mGitClient, mSearchClient, mGlobalCommands, mShell, mTreeTable, mShellPageFileService,
         mFileParamType, mPluginParamType, mServiceParamType, i18nUtil, mExtensionCommands, mContentTypes, PageUtil, URITemplate, Deferred, mStatus, mProgress,
         mOperationsClient, mResultWriters, mMetrics, _) {
 
@@ -47,7 +47,8 @@ define(["require", "orion/xhr", "i18n!orion/shell/nls/messages", "plugins/mesa/m
         var repoLocation = thisURL.substring(thisURL.indexOf("/file/"), thisURL.lastIndexOf("#"));
         var tableName = fileLocation.substring(fileLocation.lastIndexOf("/") + 1, fileLocation.indexOf(".mesa"));
 
-        mesaClient.getChangedFiles(repoLocation.substring(0, repoLocation.length)).then(function(changedFiles) {
+        //mesaClient.getChangedFileStatus(repoLocation.substring(0, repoLocation.length)).then(function(changedFiles) {
+        var changedFiles = {};
             var data = {
                 "fileReplacements": changedFiles
             };
@@ -56,7 +57,7 @@ define(["require", "orion/xhr", "i18n!orion/shell/nls/messages", "plugins/mesa/m
 
             xhr("POST", "http://localhost:3302/v6/datatable/ui/tables/" + tableName + "/preview", {
                 "data": JSON.stringify(data),
-                "headers": {"Content-Type": "application/json; charset=UTF-8"}
+                "headers": {"Content-Type": "application/json; charset=UTF-8", "Access-Control-Allow-Origin": "http://localhost:8585"}
             }).then(function(result) {
                 console.log("Building table");
                 var tableData = JSON.parse(result.response);
@@ -87,7 +88,7 @@ define(["require", "orion/xhr", "i18n!orion/shell/nls/messages", "plugins/mesa/m
                     mesaTableTable.innerHTML += rowHTML;
                     rowHTML = "";
                 }
-            });
+            //});
         });  // End changedFiles.then
 	});
 });
