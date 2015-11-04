@@ -58,10 +58,10 @@ define(['orion/PageUtil', 'orion/xsrfUtils', 'orion/PageLinks', 'orion/xhr', './
     }
 
     function redirectIfAuthProviderIsSet() {
-        getRedirectInfo().then(function(result) {
+        getRedirectInfo(1).then(function(result) {
             var authProvider = JSON.parse(result.response).AuthProvider;
             if (authProvider) {
-                window.location = "../login/oauth?oauth=" + authProvider; //$NON-NLS-0$
+                window.location = "../login/oauth?oauth=" + authProvider + "&redirect=" + encodeURIComponent(getRedirect()); //$NON-NLS-0$
             }
         }, function(error) {
             console.error("Post request failed: " + (error.response ? error.response : "no details given"));
