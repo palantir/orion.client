@@ -6,6 +6,7 @@
 define(["orion/xhr", "orion/plugin", "orion/webui/littlelib", "domReady!"], function(xhr, PluginProvider, lib) {
 
 	function RunDoctest(options) {
+		this.running = false;
 		this.inputManager = options.inputManager;
 		this.console = options.serviceRegistry.getService("orion.console"); //$NON-NLS-0$
 		this.exe = options.serviceRegistry.getService("orion.exe"); //$NON-NLS-0$
@@ -36,6 +37,10 @@ define(["orion/xhr", "orion/plugin", "orion/webui/littlelib", "domReady!"], func
 		exeBar.appendChild(runTestsButton);
 
 		options.sidebarNavInputManager.addEventListener("selectionChanged", function(event) { //$NON-NLS-0$
+			if (this.running) {
+				alert("Warning: You are navigating away from a test that has not yet completed which may cause problems. To cancel this test, simply start another test.");
+				this.running = false;
+			}
 			if (event.selections.length === 1 && event.selection["Directory"] === false && //$NON-NLS-0$
 				this.inputManager._input.match("\\.py$") != null) { //$NON-NLS-0$
 				this.showRunTests();
@@ -68,7 +73,9 @@ define(["orion/xhr", "orion/plugin", "orion/webui/littlelib", "domReady!"], func
 		run: function() {
 			this.hideRunTests();
 			this.showCancel();
+			this.running = true;
 			this.exe.getExeResult("doctest", this.inputManager._input).then(function(result) { //$NON-NLS-0$
+				this.running = false;
 				this.writeToConsole(result)
 				this.hideCancel();
 				this.showRunTests();
