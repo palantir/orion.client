@@ -11,13 +11,12 @@
  *******************************************************************************/
 /*eslint-env browser, amd*/
 define([
-	'orion/xhr',
 	'orion/PageLinks',
 	'orion/plugin',
 	'orion/URITemplate',
 	'i18n!orion/nls/messages',
 	'i18n!orion/widgets/nls/messages'
-], function(xhr, PageLinks, PluginProvider, URITemplate, messages, widgetMessages) {
+], function(PageLinks, PluginProvider, URITemplate, messages, widgetMessages) {
 	
 	function connect() {
 		var headers = {
@@ -32,23 +31,6 @@ define([
 		});
 	}
 
-	function getEnableShell() {
-		var EXE_KEY = "plugin.execution.enabled"
-		return xhr("POST", "../config", {
-			headers: {
-				"Orion-Version": "1"
-			},
-			data: JSON.stringify({
-				"configKeys": [EXE_KEY]
-			}),
-			timeout: 15000,
-			log: false
-		}).then(function(result) {
-			var resultJson = JSON.parse(result.response);
-			return resultJson[EXE_KEY];
-		});
-	}
-
 	function registerServiceProviders(provider) {
 		var serviceImpl = { /* All data is in properties */ };
 	
@@ -59,17 +41,6 @@ define([
 			nls: "orion/nls/messages",
 			imageClass: "core-sprite-edit",
 			order: 10
-		});
-		var result = getEnableShell().then(function(shouldEnable) {
-			if (shouldEnable === "true") {
-				provider.registerService("orion.page.link.category", null, {		
-					id: "shell",		
-					name: messages["Shell"],		
-					nls: "orion/nls/messages",		
-					imageClass: "core-sprite-shell",		
-					order: 40
-				});
-			}
 		});
 		provider.registerService("orion.page.link.category", null, {
 			id: "settings",
@@ -234,7 +205,6 @@ define([
 				OrionHome: PageLinks.getOrionHome()
 			}))
 		});
-		return result;
 	}
 
 	return {
