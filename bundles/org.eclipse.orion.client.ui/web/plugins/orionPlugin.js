@@ -24,8 +24,7 @@ define([
 	"plugins/taskPlugin",
 	"plugins/webEditingPlugin",
 	"profile/userservicePlugin",
-	"plugins/helpPlugin",
-	"shell/plugins/shellPagePlugin"
+	"plugins/helpPlugin"
 ], function(Deferred, PluginProvider, common) {
 	var plugins = Array.prototype.slice.call(arguments);
 	plugins.shift(); // skip Deferred

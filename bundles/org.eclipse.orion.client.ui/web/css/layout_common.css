@@ -365,6 +365,17 @@ hard-coded numbers elsewhere.
 	padding-left: 5px;
 }
 
+.editorViewerHeaderAction {
+	position: absolute;
+	right: 2px;
+	top: 3px;
+}
+
+button.editorViewerHeaderAction {
+	line-height: 20px;
+	padding-bottom: 0;
+}
+
 .editorViewerContent {
 	position: absolute;
 	width: 100%;
@@ -404,7 +415,7 @@ hard-coded numbers elsewhere.
  */
 .splitVerticalLayout {
 	position: absolute;
-	top: 33%;  /* override this value if you want a different proportion of the two split panes */
+	top: 70%;  /* override this value if you want a different proportion of the two split panes */
 	width: 100%;
 	z-index: 51;
 	height: 3px;
@@ -435,7 +446,7 @@ and (max-device-width : 1024px)  {
 	 */
 	.splitVerticalLayout {
 		position: absolute;
-		top: 33%;  /* override this value if you want a different proportion of the two split panes */
+		top: 70%;  /* override this value if you want a different proportion of the two split panes */
 		width: 100%;
 		z-index: 50;
 		height: 20px;
@@ -838,4 +849,3 @@ and (max-device-width : 1024px)  {
 	position:relative;
 	top:-6px;
 }
-

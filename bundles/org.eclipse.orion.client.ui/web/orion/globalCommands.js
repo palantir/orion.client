@@ -688,6 +688,7 @@ define([
 					main: main
 				};
 				mainSplitter.splitter = new mSplitter.Splitter({
+					id: "navEdit",
 					node: splitNode,
 					sidePanel: side,
 					mainPanel: main,

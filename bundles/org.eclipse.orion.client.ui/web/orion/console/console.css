@@ -1,0 +1,47 @@
+#console {
+	background: white;
+	color: #8a9ba8;
+	height: 100%;
+	overflow: auto;
+	position: absolute;
+	width: 100%;
+}
+
+.clear-console {
+	cursor: pointer;
+	display: inline-block;
+	line-height: 22px;
+	position: fixed;
+	right: 5px;
+	text-decoration: underline;
+}
+
+.console-arrow {
+	display: inline-block;
+	left: -16px;
+	position: absolute;
+	top: 2px;
+}
+
+.console-message {
+	padding: 5px 0;
+	position: relative;
+	white-space: pre;
+}
+
+.console-message .core-sprite-closedarrow, .console-message .core-sprite-openarrow {
+	cursor: pointer;
+}
+
+.console-message .core-sprite-closedarrow:hover, .console-message .core-sprite-openarrow:hover {
+	color: #00AED1;
+}
+
+.console-messages {
+	font-family: monospace;
+	list-style-type: none;
+	margin: 0;
+	overflow: scroll;
+	padding-left: 20px;
+	padding-right: 40px;
+}
