@@ -22,8 +22,7 @@ define(['orion/webui/littlelib', 'orion/webui/splitter'], function(lib, mSplitte
 
 		this.console = lib.node("console"); //$NON-NLS-0$
 		this.contentsNode = lib.$(".console-messages", this.console); //$NON-NLS-0$
-		this.inputManager = options.inputManager;
-		this.serviceRegistry = options.serviceRegistry;
+		options.serviceRegistry.registerService("orion.console", this); //$NON-NLS-0$
 		lib.$(".clear-console").onclick = this.clearContent.bind(this); //$NON-NLS-0$
 		this.clearContent();
 	}

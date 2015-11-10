@@ -744,11 +744,9 @@ objects.mixin(EditorSetup.prototype, {
 	},
 
 	createConsole: function() {
-		var console = new mConsole.Console({
-			inputManager: this.activeEditorViewer.inputManager,
+		new mConsole.Console({
 			serviceRegistry: this.serviceRegistry
 		});
-		this.serviceRegistry.registerService("orion.console", console, {});
 	},
 
 	createExe: function() {

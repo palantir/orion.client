@@ -29,7 +29,8 @@ define([
 	'orion/git/gitClient',
 	'orion/ssh/sshTools',
 	'orion/fileUtils',
-	'orion/links'
+	'orion/links',
+	'orion/console/console'
 ], function(
 	mBrowserCompatibility,
 	messages,
@@ -49,7 +50,8 @@ define([
 	mGitClient,
 	mSshTools,
 	mFileUtils,
-	mLinks
+	mLinks,
+	mConsole
 ) {
 
 mBootstrap.startup().then(function(core) {
@@ -67,6 +69,9 @@ mBootstrap.startup().then(function(core) {
 	var gitClient = new mGitClient.GitService(serviceRegistry);
 	var fileClient = new mFileClient.FileClient(serviceRegistry);
 	var searcher = new mSearchClient.Searcher({serviceRegistry: serviceRegistry, commandService: commandRegistry, fileService: fileClient});
+	new mConsole.Console({
+		serviceRegistry: serviceRegistry
+	});
 	
 	var explorer = new mGitRepositoryExplorer.GitRepositoryExplorer({
 		parentId: "artifacts", //$NON-NLS-0$
