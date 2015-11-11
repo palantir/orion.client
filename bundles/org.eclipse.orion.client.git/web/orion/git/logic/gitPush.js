@@ -175,7 +175,7 @@ define([
 												}
 											}
 											if (jsonData.Message) {
-												display.Message += ".</br></br>Remote responded with: " + jsonData.Message;
+												serviceRegistry.getService("orion.console").createContent("Remote responded with: " + jsonData.Message); //$NON-NLS-0$
 											}
 										}
 										serviceRegistry.getService("orion.page.message").setProgressResult(display); //$NON-NLS-0$
