@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+    <head>
+		<meta name="copyright" content="Copyright (c) Palantir Technologies 2015." >
+		<meta http-equiv="Content-Language" content="en-us">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Snake</title>
+		<link rel="stylesheet" type="text/css" href="snake.css" />
+		<link rel="icon" href="images/snake.png" type="image/png">
+		<script src="../requirejs/require.js"></script>
+		<script>
+			/*eslint-env browser, amd*/
+			require(["../orion/require-config.js"], function(config){
+				require(["snake/snake"], null, config.errback);
+			});
+		</script>
+</head>
+	<body id="orion-snake" class="orionPage">
+		<div id="sideMenu" class="sideMenu"></div>
+		<div id="pageContent" class="content-fixedHeight">
+			<div id="sideMenuToggle" class="sideMenuToggle"></div>
+			<div id="pageToolbar" class="mainToolbar toolComposite toolbarLayout"></div>
+			<div id="innerPanels" class="innerPanels">
+				<div id="leftPane" class="auxpane sidePanelLayout hasSplit">
+					<div class="fixedToolbarHolder sidebarWrapper">
+						<div id="sidebar" class="dropdownTrigger toolbarTarget sidebar"></div>
+					</div>
+				</div>
+				<div class="split splitLayout"></div>
+				<div id="rightPane" class="mainpane mainPanelLayout hasSplit">
+					<div class="fixedToolbarHolder">
+						<div id="table" class="workingTarget"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer-fixed-bottom footer" id="footer"></div>
+	</body>
+</html>

@@ -59,6 +59,7 @@
         '${orionClient}/bundles/org.eclipse.orion.client.git',
         '${orionClient}/bundles/org.eclipse.orion.client.help',
         '${orionClient}/bundles/org.eclipse.orion.client.javascript',
+        '${orionClient}/bundles/org.eclipse.orion.client.snake',
         '${orionClient}/bundles/org.eclipse.orion.client.webtools',
         '${orionClient}/bundles/org.eclipse.orion.client.users'
     ],
@@ -83,6 +84,7 @@
             { name: "edit/edit" },
             { name: "git/git-repository" },
             { name: "git/plugins/gitPlugin" },
+            { name: "snake/plugins/snakePlugin" },
             { name: "help/help" },
             { name: "javascript/plugins/javascriptPlugin" },
             { name: "javascript/plugins/ternWorkerCore" },
