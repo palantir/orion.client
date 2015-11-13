@@ -14,14 +14,18 @@ define([
 	'orion/fileClient',
 	'orion/globalCommands',
 	'orion/operationsClient',
-	'orion/searchClient'
+	'orion/searchClient',
+	'orion/webui/littlelib',
+	'snake/snakeContainer'
 ], function(
 	mBootstrap,
 	mCommandRegistry,
 	mFileClient,
 	mGlobalCommands,
 	mOperationsClient,
-	mSearchClient
+	mSearchClient,
+	lib,
+	SnakeContainer
 ) {
 	mBootstrap.startup().then(function(core) {
 		var serviceRegistry = core.serviceRegistry;
@@ -39,6 +43,12 @@ define([
 		});
 
 		mGlobalCommands.generateBanner("orion-snake", serviceRegistry, commandRegistry, preferences, searcher); //$NON-NLS-0$
+
+		lib.node("snakeCommandsTitle").innerHTML = "Snake Commands"; //$NON-NLS-1$ //$NON-NLS-0$
+		var snakeContainer = new SnakeContainer({
+			serviceRegistry: serviceRegistry
+		}, lib.node("snakeCommandsContainer"), lib.node("snakeCommands")); //$NON-NLS-0$
+		snakeContainer.show();
 	});
 //end of define
 });

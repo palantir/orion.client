@@ -9,3 +9,21 @@
 @import "../orion/compare/compareView.css";
 
 @import "../css/theme.css";
+
+@import "../settings/settings.css";
+
+.snakeCommandsTitle {
+	background: white;
+	border: 1px solid #dadada;
+	font-size: 12px;
+	color: #333;
+	font-weight: bold;
+	padding: 12px 6px 11px 6px;
+	margin: 0;
+}
+
+.snakeCommandsContainer {
+	height: calc(100% - 38px);
+	position: relative;
+	top: 0;
+}

@@ -21,15 +21,17 @@
 			<div id="sideMenuToggle" class="sideMenuToggle"></div>
 			<div id="pageToolbar" class="mainToolbar toolComposite toolbarLayout"></div>
 			<div id="innerPanels" class="innerPanels">
-				<div id="leftPane" class="auxpane sidePanelLayout hasSplit">
-					<div class="fixedToolbarHolder sidebarWrapper">
-						<div id="sidebar" class="dropdownTrigger toolbarTarget sidebar"></div>
+				<div id="auxpane" class="auxpane sidePanelLayout hasSplit">
+					<div class="fixedToolbarHolder">
+						<div id="sidebarToolbar" class="sidebarToolbar mainToolbar toolComposite toolbarLayout"></div>
+						<div id="snakeCommandsTitle" class="snakeCommandsTitle"></div>
+						<div id="snakeCommandsContainer" class="toolbarTarget snakeCommandsContainer toolbarTarget-toolbarHidden"></div>
 					</div>
 				</div>
 				<div class="split splitLayout"></div>
 				<div id="rightPane" class="mainpane mainPanelLayout hasSplit">
 					<div class="fixedToolbarHolder">
-						<div id="table" class="workingTarget"></div>
+						<div class="toolbarTarget workingTarget toolbarTarget-toolbarHidden" tabindex="0" id="snakeCommands"></div>				
 					</div>
 				</div>
 			</div>

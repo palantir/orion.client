@@ -11,7 +11,7 @@
 define([
 	"orion/plugin",
 	"../../mixloginstatic/javascript/common",
-	"orion/URL-shim", // no exports
+	"orion/URL-shim"
 ], function(PluginProvider, common) {
 	function connect() {
 		// use common as it is guaranteed to have been loaded
