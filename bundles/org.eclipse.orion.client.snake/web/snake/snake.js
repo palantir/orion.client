@@ -11,6 +11,7 @@
 define([
 	'orion/bootstrap',
 	'orion/commandRegistry',
+	'orion/console/console',
 	'orion/fileClient',
 	'orion/globalCommands',
 	'orion/operationsClient',
@@ -20,6 +21,7 @@ define([
 ], function(
 	mBootstrap,
 	mCommandRegistry,
+	mConsole,
 	mFileClient,
 	mGlobalCommands,
 	mOperationsClient,
@@ -32,6 +34,10 @@ define([
 		var preferences = core.preferences;
 		var pluginRegistry = core.pluginRegistry;
 
+		new mConsole.Console({
+			serviceRegistry: serviceRegistry
+		});
+
 		// Register services
 		var commandRegistry = new mCommandRegistry.CommandRegistry({ });
 
@@ -42,13 +48,14 @@ define([
 			fileService: fileClient
 		});
 
-		mGlobalCommands.generateBanner("orion-snake", serviceRegistry, commandRegistry, preferences, searcher); //$NON-NLS-0$
+		mGlobalCommands.generateBanner("orion-snake", serviceRegistry, commandRegistry, preferences, searcher);
 
-		lib.node("snakeCommandsTitle").innerHTML = "Snake Commands"; //$NON-NLS-1$ //$NON-NLS-0$
+		lib.node("snakeCommandsTitle").innerHTML = "Snake Commands";
 		var snakeContainer = new SnakeContainer({
+			commandService: commandRegistry,
+			preferences: preferences,
 			serviceRegistry: serviceRegistry
-		}, lib.node("snakeCommandsContainer"), lib.node("snakeCommands")); //$NON-NLS-0$
+		}, lib.node("snakeCommandsContainer"), lib.node("snakeCommands"));
 		snakeContainer.show();
 	});
-//end of define
 });

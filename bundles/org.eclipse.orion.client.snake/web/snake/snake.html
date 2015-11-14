@@ -30,8 +30,17 @@
 				</div>
 				<div class="split splitLayout"></div>
 				<div id="rightPane" class="mainpane mainPanelLayout hasSplit">
-					<div class="fixedToolbarHolder">
-						<div class="toolbarTarget workingTarget toolbarTarget-toolbarHidden" tabindex="0" id="snakeCommands"></div>				
+					<div id="topPane" class="topPanelLayout hasSplit">
+						<div class="fixedToolbarHolder">
+							<div class="toolbarTarget workingTarget toolbarTarget-toolbarHidden" tabindex="0" id="snakeCommands"></div>				
+						</div>
+					</div>
+					<div class="splitEditConsole splitLayout" data-initial-state="closed"></div>
+					<div id="bottomPane" class="auxpane botPanelLayout hasSplit">
+						<div id="console">
+							<div class="clear-console">Clear</div>
+							<ul class="console-messages"></ul>
+						</div>
 					</div>
 				</div>
 			</div>

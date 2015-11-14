@@ -9,67 +9,98 @@
 /*eslint-env browser, amd*/
 
 define([
+	"orion/commands",
+	"orion/Deferred",
 	"orion/objects",
+	"orion/section",
 	"orion/webui/littlelib",
 	"orion/widgets/input/SettingsTextfield",
 	"orion/widgets/settings/Subsection",
 	"orion/xhr",
 ], function(
+	commands,
+	Deferred,
 	objects,
+	mSection,
 	lib,
 	SettingsTextfield,
 	Subsection,
 	xhr
 ) {
 	function DryRun(options, node) {
+		objects.mixin(this, options);
 		this.node = node;
+		this.subsections = {
+			datasetName: {
+				fieldlabel: "The dataset name",
+				sectionName: "Dataset Name"
+			},
+			userCodeDir: {
+				fieldlabel: "Absolute path to directory containing user code",
+				sectionName: "Code Directory"
+			},
+			authorConfigPath: {
+				fieldlabel: "Relative path from user code directory containing configuration file",
+				sectionName: "Config Path"
+			},
+			outputRootDir: {
+				fieldlabel: "Absolute path to directory where output and error logs will be written",
+				sectionName: "Output Directory"
+			}
+		};
 	}
 
 	objects.mixin(DryRun.prototype, {
-		templateString:	"" +
-					"<div class='sectionWrapper toolComposite'>" +
-						"<div class='sectionAnchor sectionTitle layoutLeft'>Dry Run</div>" + 
-						"<div id='userCommands' class='layoutRight sectionActions'></div>" +
-					"</div>" +
-					"<div class='sections sectionTable'>" +
-					"</div>",
+		templateString:	"<div class='sections sectionTable'></div>",
 
 		createSections: function() {
-			this.userCodeDir = [
-				new SettingsTextfield({
-					fieldlabel: "Absolute path to directory containing user code",
-				})
-			];
-			var userCodeDirSection = new Subsection({
-				children: this.userCodeDir,
-				parentNode: this.sections,
-				sectionName: "Code Directory"
+			sectionWidget = new mSection.Section(this.sections, {
+				id: "dryRun",
+				slideout: true,
+				title: "Dry Run"
 			});
 
-			this.authorConfigPath = [
-				new SettingsTextfield({
-			    	fieldlabel: "Relative path from user code directory containing configuration file"
-			    })
-			];
-			var authorConfigPathSection = new Subsection({
-				children: this.authorConfigPath,
-				parentNode: this.sections,
-				sectionName: "Config Path"
-			});
+			Object.keys(this.subsections).forEach(function(subsectionKey) {
+				this["subsectionKey"] = [
+					new SettingsTextfield({
+						fieldlabel: this.subsections[subsectionKey].fieldlabel
+					})
+				];
 
-			this.outputRootDir = [
-				new SettingsTextfield({
-			    	fieldlabel: "Absolute path to directory where output and error logs will be written"
-			    })
-			];
-			var outputRootDirSection = new Subsection({
-				children: this.outputRootDir,
-				parentNode: this.sections,
-				sectionName: "Output Directory"
+				var subsection = new Subsection({
+					children: this["subsectionKey"],
+					parentNode: sectionWidget.getContentElement(),
+					sectionName: this.subsections[subsectionKey].sectionName
+				});
+
+				subsection.show();
+			}.bind(this));
+		},
+
+		createToolbar: function() {
+			var toolbar = lib.node("dryRunToolActionsArea");
+			var dryRunCommand = new commands.Command({
+				callback: function(data) {
+					this.dryRun().then(function() {
+						lib.$(".commandButton", toolbar).blur();
+					});
+				}.bind(this),
+				id: "orion.snake.dryRun",
+				name: "Run",
+				tooltip: "Performs a dry run for the dataset"
 			});
-			userCodeDirSection.show();
-			authorConfigPathSection.show();
-			outputRootDirSection.show();
+			this.commandService.addCommand(dryRunCommand);
+			this.commandService.registerCommandContribution("runDryRunCommand", "orion.snake.dryRun", 2);
+			this.commandService.renderCommands("runDryRunCommand", toolbar, this, this, "button");
+		},
+
+		dryRun: function() {
+			// TODO: implement this when Snake's dry-run code goes in
+			// xhr(...);
+			var mock = new Deferred();
+			return mock.resolve("Fake response string").then(function(message) {
+				return this.serviceRegistry.getService("orion.console").createContent(message);
+			}.bind(this));
 		},
 
 		show: function() {
@@ -77,6 +108,7 @@ define([
 			
 			this.sections = lib.$('.sections', this.node);
 			this.createSections();
+			this.createToolbar();
 		},
 
 		destroy: function() {
