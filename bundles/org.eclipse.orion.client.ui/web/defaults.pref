@@ -2,7 +2,6 @@
 	"/plugins":{
 		"plugins/orionSharedWorker.js": true,
 		"git/plugins/gitPlugin.html":true,
-		"snake/plugins/snakePlugin.html":true,
 		"webtools/plugins/webToolsPlugin.html":true,
 		"javascript/plugins/javascriptPlugin.html":true,
 		"edit/content/imageViewerPlugin.html":true,

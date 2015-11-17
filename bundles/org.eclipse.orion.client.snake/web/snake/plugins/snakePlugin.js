@@ -9,10 +9,11 @@
 /*eslint-env amd, browser*/
 /*global URL confirm*/
 define([
+	"orion/xhr",
 	"orion/plugin",
 	"../../mixloginstatic/javascript/common",
 	"orion/URL-shim"
-], function(PluginProvider, common) {
+], function(xhr, PluginProvider, common) {
 	function connect() {
 		// use common as it is guaranteed to have been loaded
 		common.getLoginHref(2).then(function(login) {
@@ -27,21 +28,44 @@ define([
 			provider.connect();
 		});
 	}
+
+	function getEnableSnake() {
+		var SNAKE_KEY = "plugin.snake.enabled";
+
+		return xhr("POST", "../config", {
+			data: JSON.stringify({
+				"configKeys": [SNAKE_KEY]
+			}),
+			headers: {
+				"Orion-Version": "1"
+			},
+			log: false,
+			timeout: 15000
+		}).then(function(result) {
+			var resultJson = JSON.parse(result.response);
+			return resultJson[SNAKE_KEY];
+		}, function(error) {
+		});
+	}
 	
 	function registerServiceProviders(provider) {
-		provider.registerService("orion.page.link.category", null, {
-			id: "snake",
-			name: "Snake",
-			imageClass: "core-sprite-outline",
-			order: 20
-		});
+		return getEnableSnake().then(function(enabled) {
+			if (enabled) {
+				provider.registerService("orion.page.link.category", null, {
+					id: "snake",
+					name: "Snake",
+					imageClass: "core-sprite-outline",
+					order: 20
+				});
 
-		provider.registerService("orion.page.link", {}, {
-			name: "Snake",
-			id: "orion.snake",
-			category: "snake",
-			order: 100, // low priority
-			uriTemplate: "{+OrionHome}/snake/snake.html#"
+				provider.registerService("orion.page.link", {}, {
+					name: "Snake",
+					id: "orion.snake",
+					category: "snake",
+					order: 100, // low priority
+					uriTemplate: "{+OrionHome}/snake/snake.html#"
+				});
+			}
 		});
 	}
 

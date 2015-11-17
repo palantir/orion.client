@@ -50,7 +50,7 @@ define([
 		_init: function() {
 			var self = this;
 			this.snakeCommands.push({
-				id: "dryRun", //$NON-NLS-0$
+				id: "dryRun",
 				textContent: "Dry Run",
 				show: self.showDryRun
 			});

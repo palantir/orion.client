@@ -61,14 +61,14 @@ define([
 			});
 
 			Object.keys(this.subsections).forEach(function(subsectionKey) {
-				this["subsectionKey"] = [
+				this[subsectionKey] = [
 					new SettingsTextfield({
 						fieldlabel: this.subsections[subsectionKey].fieldlabel
 					})
 				];
 
 				var subsection = new Subsection({
-					children: this["subsectionKey"],
+					children: this[subsectionKey],
 					parentNode: sectionWidget.getContentElement(),
 					sectionName: this.subsections[subsectionKey].sectionName
 				});
@@ -99,7 +99,12 @@ define([
 			// xhr(...);
 			var mock = new Deferred();
 			return mock.resolve("Fake response string").then(function(message) {
-				return this.serviceRegistry.getService("orion.console").createContent(message);
+				return this.serviceRegistry.getService("orion.console")
+					.createContent(JSON.stringify(Object.keys(this.subsections).map(function(subsection) {
+						var toReturn = {};
+						toReturn[subsection] = this[subsection][0].getValue();
+						return toReturn;
+					}.bind(this))));
 			}.bind(this));
 		},
 
