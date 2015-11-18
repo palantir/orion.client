@@ -14,6 +14,9 @@ define([
 	"../../mixloginstatic/javascript/common",
 	"orion/URL-shim"
 ], function(xhr, PluginProvider, common) {
+	var SNAKE_HOST_KEY = "plugin.snake.host";
+	var SNAKE_KEY = "plugin.snake.enabled";
+
 	function connect() {
 		// use common as it is guaranteed to have been loaded
 		common.getLoginHref(2).then(function(login) {
@@ -30,11 +33,9 @@ define([
 	}
 
 	function getEnableSnake() {
-		var SNAKE_KEY = "plugin.snake.enabled";
-
 		return xhr("POST", "../config", {
 			data: JSON.stringify({
-				"configKeys": [SNAKE_KEY]
+				"configKeys": [SNAKE_HOST_KEY, SNAKE_KEY]
 			}),
 			headers: {
 				"Orion-Version": "1"
@@ -42,15 +43,17 @@ define([
 			log: false,
 			timeout: 15000
 		}).then(function(result) {
-			var resultJson = JSON.parse(result.response);
-			return resultJson[SNAKE_KEY];
-		}, function(error) {
+			return JSON.parse(result.response);
 		});
 	}
 	
 	function registerServiceProviders(provider) {
-		return getEnableSnake().then(function(enabled) {
-			if (enabled) {
+		return getEnableSnake().then(function(configResult) {
+			if (configResult[SNAKE_KEY] === "true" && configResult[SNAKE_HOST_KEY]) {
+				provider.registerService("orion.snake.host", {
+					getHost: function() { return configResult[SNAKE_HOST_KEY]; }
+				});
+
 				provider.registerService("orion.page.link.category", null, {
 					id: "snake",
 					name: "Snake",
