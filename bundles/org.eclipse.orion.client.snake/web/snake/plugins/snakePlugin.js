@@ -46,7 +46,7 @@ define([
 			return JSON.parse(result.response);
 		});
 	}
-	
+
 	function registerServiceProviders(provider) {
 		return getEnableSnake().then(function(configResult) {
 			if (configResult[SNAKE_KEY] === "true" && configResult[SNAKE_HOST_KEY]) {

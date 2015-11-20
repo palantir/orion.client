@@ -85,7 +85,7 @@ define([
 
 		processHash: function() {
 			var pageParams = PageUtil.matchResourceParameters();
-			
+
 			this.preferences.getPreferences("/snakeContainer").then(function(prefs){
 				var selection = prefs.get("selection");
 				var snakeCommand = pageParams["snakeCommand"] || selection;
@@ -95,7 +95,7 @@ define([
 						return;
 					}
 				}
-				
+
 				if (!snakeCommand) {
 					// no selection exists, select the first one
 					snakeCommand = this.snakeCommands[0].id;
@@ -103,12 +103,12 @@ define([
 
 				this.showBySnakeCommand(snakeCommand);
 			}.bind(this));
-			
+
 			window.setTimeout(function() {
 				this.commandService.processURL(window.location.href);
 			}.bind(this), 0);
 		},
-	
+
 		selectSnakeCommand: function(id) {
 			this.preferences.getPreferences("/snakeContainer").then(function(prefs){
 				prefs.put("selection", id);
@@ -143,7 +143,7 @@ define([
 			this.selectSnakeCommand("dryRun");
 
 			lib.empty(this.snakeCommandActionsParent);
-		
+
 			if (this.dryRunWidget) {
 				this.dryRunWidget.destroy();
 			}

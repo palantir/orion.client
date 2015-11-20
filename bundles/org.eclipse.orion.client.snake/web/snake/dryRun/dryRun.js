@@ -35,26 +35,30 @@ define([
 		this.subsections = {
 			datasetName: {
 				create: this.createTextfield.bind(this),
-				fieldlabel: "The dataset name",
+				fieldlabel: "The dataset to compute",
 				sectionName: "Dataset Name"
 			},
 			userCodeDir: {
 				create: this.createOptions.bind(this),
-				fieldlabel: "Absolute path to directory containing user code",
+				fieldlabel: "Repository in which to execute dry run",
 				options: this.getUserCodeDirs(),
-				sectionName: "Code Directory"
+				sectionName: "Repository"
 			},
 			authorConfigPath: {
 				create: this.createTextfield.bind(this),
-				fieldlabel: "Relative path from user code directory containing configuration file",
+				fieldlabel: "Relative path to user code configuration file from code directory",
 				sectionName: "Config Path"
 			},
 			outputRootDir: {
 				create: this.createTextfield.bind(this),
-				fieldlabel: "Absolute path to directory where output and error logs will be written",
+				fieldlabel: "Absolute path to directory to log output and errors",
 				sectionName: "Output Directory"
 			}
 		};
+	}
+
+	function jsonPrettify(jsonString) {
+		return JSON.stringify(JSON.parse(jsonString), null, "    ");
 	}
 
 	objects.mixin(DryRun.prototype, {
@@ -133,26 +137,32 @@ define([
 
 		dryRun: function() {
 			return this.serviceRegistry.getService("orion.snake.host").getHost().then(function(host) {
+				var datasetName = this.datasetName[0].getValue();
 				var userCodeDir = this.userCodeDir[0].select.value;
-				// TODO: wait for options to initialize, assume they are initialized for now
-				return xhr("POST", host + "/dryRun/" + this.datasetName[0].getValue(), {
-					headers: { 
-						"Content-Type" : "application/json; charset=UTF-8"
-					},
-					handleAs: "json",
-					data: {
-						userCodeDir: userCodeDir,
-						authorConfigPath: userCodeDir + "/" + this.authorConfigPath[0].getValue(),
-						outputRootDir: this.outputRootDir[0].getValue()
-					}
-				})
-			}.bind(this));
+				if (datasetName) {
+					// TODO: wait for options to initialize, assume they are initialized for now
+					return xhr("POST", host + "/dryRun/" + datasetName, {
+						headers: {
+							"Content-Type" : "application/json; charset=UTF-8"
+						},
+						handleAs: "json",
+						data: JSON.stringify({
+							userCodeDir: userCodeDir,
+							authorConfigPath: this.authorConfigPath[0].getValue(),
+							outputRootDir: this.outputRootDir[0].getValue()
+						})
+					})
+				} else {
+					var d = new Deferred();
+					return d.reject({ response: "{\"message\":\"Dataset name cannot be empty\"}"});
+				}
+			}.bind(this)).then(this.handleRestResponse.bind(this), this.handleRestResponse.bind(this));
 		},
 
 		getUserCodeDirs: function() {
 			var codeDirs = [];
 			return xhr("GET", "../snakeapi/projects", {
-				headers: { 
+				headers: {
 					"Orion-Version" : "1",
 					"Content-Type" : "application/json; charset=UTF-8"
 				},
@@ -162,9 +172,13 @@ define([
 			});
 		},
 
+		handleRestResponse: function(restResponse) {
+			return this.serviceRegistry.getService("orion.console").createContent(jsonPrettify(restResponse.response));
+		},
+
 		show: function() {
 			this.node.innerHTML = this.templateString;
-			
+
 			this.sections = lib.$('.sections', this.node);
 			this.createSections();
 			this.createToolbar();
