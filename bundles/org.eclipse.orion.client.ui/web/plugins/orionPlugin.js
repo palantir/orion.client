@@ -24,7 +24,8 @@ define([
 	"plugins/taskPlugin",
 	"plugins/webEditingPlugin",
 	"profile/userservicePlugin",
-	"plugins/helpPlugin"
+	"plugins/helpPlugin",
+	"../snake/plugins/snakePlugin"
 ], function(Deferred, PluginProvider, common) {
 	var plugins = Array.prototype.slice.call(arguments);
 	plugins.shift(); // skip Deferred

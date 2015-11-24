@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+    <head>
+		<meta name="copyright" content="Copyright (c) Palantir Technologies 2015." >
+		<meta http-equiv="Content-Language" content="en-us">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Snake</title>
+		<link rel="stylesheet" type="text/css" href="snake.css" />
+		<link rel="icon" href="images/snake.png" type="image/png">
+		<script src="../requirejs/require.js"></script>
+		<script>
+			/*eslint-env browser, amd*/
+			require(["../orion/require-config.js"], function(config){
+				require(["snake/snake"], null, config.errback);
+			});
+		</script>
+</head>
+	<body id="orion-snake" class="orionPage">
+		<div id="sideMenu" class="sideMenu"></div>
+		<div id="pageContent" class="content-fixedHeight">
+			<div id="sideMenuToggle" class="sideMenuToggle"></div>
+			<div id="pageToolbar" class="mainToolbar toolComposite toolbarLayout"></div>
+			<div id="innerPanels" class="innerPanels">
+				<div id="auxpane" class="auxpane sidePanelLayout hasSplit">
+					<div class="fixedToolbarHolder">
+						<div id="sidebarToolbar" class="sidebarToolbar mainToolbar toolComposite toolbarLayout"></div>
+						<div id="snakeCommandsTitle" class="snakeCommandsTitle"></div>
+						<div id="snakeCommandsContainer" class="toolbarTarget snakeCommandsContainer toolbarTarget-toolbarHidden"></div>
+					</div>
+				</div>
+				<div class="split splitLayout"></div>
+				<div id="rightPane" class="mainpane mainPanelLayout hasSplit">
+					<div id="topPane" class="topPanelLayout hasSplit">
+						<div class="fixedToolbarHolder">
+							<div class="toolbarTarget workingTarget toolbarTarget-toolbarHidden" tabindex="0" id="snakeCommands"></div>
+						</div>
+					</div>
+					<div class="splitEditConsole splitLayout" data-initial-state="closed"></div>
+					<div id="bottomPane" class="auxpane botPanelLayout hasSplit">
+						<div id="console">
+							<div class="clear-console">Clear</div>
+							<ul class="console-messages"></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer-fixed-bottom footer" id="footer"></div>
+	</body>
+</html>
