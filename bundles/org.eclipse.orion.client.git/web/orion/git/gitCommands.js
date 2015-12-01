@@ -551,27 +551,6 @@ var exports = {};
 					commandInvocation.errorData = jsonData.JsonData;
 					commandInvocation.errorData.failedOperation = jsonData.failedOperation;
 					commandService.collectParameters(commandInvocation);
-				} else if (!commandInvocation.optionsRequested){
-					var gitPreferenceStorage = new GitPreferenceStorage(serviceRegistry);
-					gitPreferenceStorage.isEnabled().then(
-						function(isEnabled){
-							if(isEnabled){
-								if (jsonData.JsonData.User)
-									commandInvocation.parameters = new mCommandRegistry.ParametersDescription([new mCommandRegistry.CommandParameter("sshpassword", "password", messages['Password:']), new mCommandRegistry.CommandParameter("saveCredentials", "boolean", messages["Don't prompt me again:"])], {hasOptionalParameters: true}); //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
-								else
-									commandInvocation.parameters = new mCommandRegistry.ParametersDescription([new mCommandRegistry.CommandParameter("sshuser", "text", messages['User Name:']), new mCommandRegistry.CommandParameter("sshpassword", "password", messages['Password:']), new mCommandRegistry.CommandParameter("saveCredentials", "boolean", messages["Don't prompt me again:"])], {hasOptionalParameters: true}); //$NON-NLS-5$ //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
-							} else {
-								if (jsonData.JsonData.User)
-									commandInvocation.parameters = new mCommandRegistry.ParametersDescription([new mCommandRegistry.CommandParameter("sshpassword", "password", messages['Password:'])], {hasOptionalParameters: true}); //$NON-NLS-1$ //$NON-NLS-0$
-								else
-									commandInvocation.parameters = new mCommandRegistry.ParametersDescription([new mCommandRegistry.CommandParameter("sshuser", "text", messages['User Name:']), new mCommandRegistry.CommandParameter("sshpassword", "password", messages['Password:'])], {hasOptionalParameters: true}); //$NON-NLS-4$ //$NON-NLS-3$ //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
-							}
-							
-							commandInvocation.errorData = jsonData.JsonData;
-							commandInvocation.errorData.failedOperation = jsonData.failedOperation;
-							commandService.collectParameters(commandInvocation);
-						}
-					);
 				} else {
 					commandInvocation.errorData = jsonData.JsonData;
 					commandInvocation.errorData.failedOperation = jsonData.failedOperation;
