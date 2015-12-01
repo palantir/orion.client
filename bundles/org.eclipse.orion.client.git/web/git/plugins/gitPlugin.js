@@ -537,7 +537,7 @@ define([
 			id: "orion.git.projecthandler",
 			type: "git",
 			addParameters: [{id: "url", type: "url", name: gitmessages["Url:"]}],
-			optionalParameters: [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]}, {id: "sshpassword", type: "password", name:  gitmessages["Password:"]},{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]}, {id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}],
+			optionalParameters: [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]}, {id: "sshpassword", type: "password", name:  gitmessages["Password:"]}],
 			nls: "git/nls/gitmessages",
 			addDependencyName: gitmessages["addDependencyName"],
 			addDependencyTooltip: gitmessages["addDependencyTooltip"],
