@@ -26,7 +26,7 @@
 .console-message {
 	padding: 5px 0;
 	position: relative;
-	white-space: pre;
+	white-space: pre-wrap;
 }
 
 .console-message .core-sprite-closedarrow, .console-message .core-sprite-openarrow {
