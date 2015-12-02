@@ -31,6 +31,7 @@ define([
 ) {
 	function DryRun(options, node) {
 		objects.mixin(this, options);
+		this.console = this.serviceRegistry.getService("orion.console");
 		this.node = node;
 		this.subsections = {
 			datasetName: {
@@ -137,26 +138,50 @@ define([
 
 		dryRun: function() {
 			return this.serviceRegistry.getService("orion.snake.host").getHost().then(function(host) {
-				var datasetName = this.datasetName[0].getValue();
-				var userCodeDir = this.userCodeDir[0].select.value;
-				if (datasetName) {
-					// TODO: wait for options to initialize, assume they are initialized for now
-					return xhr("POST", host + "/dryRun/" + datasetName, {
-						headers: {
-							"Content-Type" : "application/json; charset=UTF-8"
-						},
-						handleAs: "json",
-						data: JSON.stringify({
-							userCodeDir: userCodeDir,
-							authorConfigPath: this.authorConfigPath[0].getValue(),
-							outputRootDir: this.outputRootDir[0].getValue()
-						})
-					})
-				} else {
-					var d = new Deferred();
-					return d.reject({ response: "{\"message\":\"Dataset name cannot be empty\"}"});
-				}
-			}.bind(this)).then(this.handleRestResponse.bind(this), this.handleRestResponse.bind(this));
+				var handleRestResponse = function(restResponse) {
+					if (typeof restResponse === "object") {
+						if (restResponse && restResponse.status === 0) {
+							return this.console.createContent("CORS failure. Check that \"" + host.host +
+									"\"'s origin specifies orion's server as an allowed cross origin.");
+						} else {
+							return this.console.createContent(jsonPrettify(restResponse.response));
+						}
+					} else {
+						return this.console.createContent(restResponse);
+					}
+				}.bind(this);
+
+				return Deferred.when((function() {
+					var datasetName = this.datasetName[0].getValue();
+					var userCodeDir = this.userCodeDir[0].select.value;
+					if (host.canRequest) {
+						if (datasetName) {
+							// TODO: wait for options to initialize, assume they are initialized for now
+							return xhr("POST", host.host + "/dryRun/" + datasetName, {
+								headers: {
+									"Content-Type" : "application/json; charset=UTF-8"
+								},
+								handleAs: "json",
+								data: JSON.stringify({
+									userCodeDir: userCodeDir,
+									authorConfigPath: this.authorConfigPath[0].getValue(),
+									outputRootDir: this.outputRootDir[0].getValue()
+								})
+							});
+						} else {
+							var d = new Deferred();
+							return d.reject("Dataset name cannot be empty!");
+						}
+					} else {
+						var d = new Deferred();
+						var thisType = host.http ? "http" : "https";
+						var thatType = host.http ? "https" : "http";
+						return d.reject("Mixed content error: The url \"" + window.location.href + "\" has protocol " +
+								thisType + " but the XMLHttpRequest url \"" + host.host + "\" has protocol " +
+								thatType + ".");
+					}
+				}.bind(this))()).then(handleRestResponse, handleRestResponse);
+			}.bind(this));
 		},
 
 		getUserCodeDirs: function() {
@@ -170,10 +195,6 @@ define([
 			}).then(function(restResponse) {
 				return JSON.parse(restResponse.response);
 			});
-		},
-
-		handleRestResponse: function(restResponse) {
-			return this.serviceRegistry.getService("orion.console").createContent(jsonPrettify(restResponse.response));
 		},
 
 		show: function() {

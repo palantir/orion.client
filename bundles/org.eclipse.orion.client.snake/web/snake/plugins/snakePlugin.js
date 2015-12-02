@@ -48,10 +48,23 @@ define([
 	}
 
 	function registerServiceProviders(provider) {
+		var getProtocol = function(string) {
+			return string.substring(0, 5);
+		};
+
 		return getEnableSnake().then(function(configResult) {
 			if (configResult[SNAKE_KEY] === "true" && configResult[SNAKE_HOST_KEY]) {
+				var host = configResult[SNAKE_HOST_KEY];
+				var hostProtocol = getProtocol(host);
+				var orionProtocol = getProtocol(window.location.href);
 				provider.registerService("orion.snake.host", {
-					getHost: function() { return configResult[SNAKE_HOST_KEY]; }
+					getHost: function() { 
+						return {
+							canRequest: hostProtocol === orionProtocol,
+							host: host,
+							http: hostProtocol === "http:" ? "http" : "https"
+						};
+					}
 				});
 
 				provider.registerService("orion.page.link.category", null, {
