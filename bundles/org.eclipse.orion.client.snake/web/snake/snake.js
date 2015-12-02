@@ -36,7 +36,7 @@ define([
 
 		new mConsole.Console({
 			serviceRegistry: serviceRegistry
-		});
+		}).hide();
 
 		// Register services
 		var commandRegistry = new mCommandRegistry.CommandRegistry({ });
