@@ -34,10 +34,6 @@ define([
 		var preferences = core.preferences;
 		var pluginRegistry = core.pluginRegistry;
 
-		new mConsole.Console({
-			serviceRegistry: serviceRegistry
-		}).hide();
-
 		// Register services
 		var commandRegistry = new mCommandRegistry.CommandRegistry({ });
 
@@ -57,5 +53,9 @@ define([
 			serviceRegistry: serviceRegistry
 		}, lib.node("snakeCommandsContainer"), lib.node("snakeCommands"));
 		snakeContainer.show();
+
+		new mConsole.Console({
+			serviceRegistry: serviceRegistry
+		}).hide();
 	});
 });

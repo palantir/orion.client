@@ -69,9 +69,6 @@ mBootstrap.startup().then(function(core) {
 	var gitClient = new mGitClient.GitService(serviceRegistry);
 	var fileClient = new mFileClient.FileClient(serviceRegistry);
 	var searcher = new mSearchClient.Searcher({serviceRegistry: serviceRegistry, commandService: commandRegistry, fileService: fileClient});
-	new mConsole.Console({
-		serviceRegistry: serviceRegistry
-	}).hide();
 	
 	var explorer = new mGitRepositoryExplorer.GitRepositoryExplorer({
 		parentId: "artifacts", //$NON-NLS-0$
@@ -145,6 +142,10 @@ mBootstrap.startup().then(function(core) {
 			});
 		}
 	}, false);
+
+	new mConsole.Console({
+		serviceRegistry: serviceRegistry
+	}).hide();
 });
 
 //end of define
