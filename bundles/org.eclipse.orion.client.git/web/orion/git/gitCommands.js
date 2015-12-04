@@ -932,6 +932,7 @@ var exports = {};
 					return pushCallbackTags(data).then(done);
 				}
 				return fetchCallback(data).then(function() {
+					data.firstFailure = false;
 					return rebaseCallback(data).then(function() {
 						var progressService = serviceRegistry.getService("orion.page.progress"); //$NON-NLS-0$
 						var service = serviceRegistry.getService("orion.git.provider"); //$NON-NLS-0$
