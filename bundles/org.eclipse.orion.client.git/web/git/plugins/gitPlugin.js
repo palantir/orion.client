@@ -402,7 +402,7 @@ define([
 			return gitUrl;
 		}
 	
-		provider.registerService("orion.project.handler", {
+		var gitProjectHandlerImpl = {
 			paramsToDependencyDescription: function(params){
 				return {Type: "git", Location: removeUserInformation(params.url)};
 			},
@@ -463,10 +463,6 @@ define([
 								return;
 							} 
 							if(error.JsonData.Host){
-								error.Retry = {
-									addParameters : [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]}, {id: "sshpassword", type: "password", name:  gitmessages["Password:"]}],
-									optionalParameters: [{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]}, {id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}]
-								};
 								deferred.reject(error);
 								return;
 							}
@@ -533,15 +529,31 @@ define([
 				);
 				return deferred;
 			}
-		}, {
-			id: "orion.git.projecthandler",
-			type: "git",
+		};
+		provider.registerService("orion.project.handler", gitProjectHandlerImpl, {
+			id: "orion.git.filegitprojecthandler",
+			type: "git.filegit",
 			addParameters: [{id: "url", type: "url", name: gitmessages["Url:"]}],
-			optionalParameters: [{id: "sshuser", type: "text", name:  gitmessages["User Name:"]}, {id: "sshpassword", type: "password", name:  gitmessages["Password:"]},{id: "sshprivateKey", type: "textarea", name:  gitmessages["Ssh Private Key:"]}, {id: "sshpassphrase", type: "password", name:  gitmessages["Ssh Passphrase:"]}],
 			nls: "git/nls/gitmessages",
-			addDependencyName: gitmessages["addDependencyName"],
+			addDependencyName: "Git Repository (File/Git protocol)",
 			addDependencyTooltip: gitmessages["addDependencyTooltip"],
-			addProjectName: gitmessages["addProjectName"],
+			addProjectName: "Git Repository (File/Git protocol)",
+			addProjectTooltip: gitmessages["addProjectTooltip"],
+			actionComment: "Cloning ${url}",
+			validationProperties: [
+				{source: "Git"} // alternate {soruce: "Children:[Name]", match: ".git"}
+			]
+		});
+		provider.registerService("orion.project.handler", gitProjectHandlerImpl, {
+			id: "orion.git.httpsprojecthandler",
+			type: "git.https",
+			addParameters: [{id: "url", type: "url", name: gitmessages["Url:"]},
+			                {id: "sshuser", type: "text", name:  gitmessages["User Name:"]},
+			                {id: "sshpassword", type: "password", name:  gitmessages["Password:"]}],
+			nls: "git/nls/gitmessages",
+			addDependencyName: "Git Repository (Https protocol)",
+			addDependencyTooltip: gitmessages["addDependencyTooltip"],
+			addProjectName: "Git Repository (Https protocol)",
 			addProjectTooltip: gitmessages["addProjectTooltip"],
 			actionComment: "Cloning ${url}",
 			validationProperties: [

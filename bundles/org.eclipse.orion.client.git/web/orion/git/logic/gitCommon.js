@@ -263,32 +263,10 @@ define(['orion/git/util','orion/i18nUtil','orion/git/gitPreferenceStorage','orio
 		}
 		
 		var failure = function(){
-			if (!data.parameters && !data.optionsRequested){
+			if (!data.firstFailure && !data.optionsRequested){
+				data.firstFailure = true;
 				triggerCallback(data.sshObject || {gitSshUsername: "", gitSshPassword: "", gitPrivateKey: "", gitPassphrase: ""}); //$NON-NLS-2$ //$NON-NLS-1$ //$NON-NLS-0$
 				return;
-			}
-		
-			// try to gather creds from the slideout first
-			if (data.parameters && !data.optionsRequested) {
-				var sshUser = (data.parameters && data.parameters.valueFor("sshuser")) || data.errorData.User; //$NON-NLS-0$
-				var sshPassword = data.parameters && data.parameters.valueFor("sshpassword") || "";	 //$NON-NLS-0$
-				var saveCredentials = data.parameters && data.parameters.valueFor("saveCredentials"); //$NON-NLS-0$
-				
-				var gitPreferenceStorage = new GitPreferenceStorage(serviceRegistry);
-				if(saveCredentials){
-					gitPreferenceStorage.put(repository, {
-						gitSshUsername : sshUser,
-						gitSshPassword : sshPassword
-					}).then(
-						function(){
-							triggerCallback({gitSshUsername: sshUser, gitSshPassword: sshPassword, gitPrivateKey: "", gitPassphrase: ""}); //$NON-NLS-0$
-						}
-					);
-					return;
-				} else {
-					triggerCallback({gitSshUsername: sshUser, gitSshPassword: sshPassword, gitPrivateKey: "", gitPassphrase: ""}); //$NON-NLS-0$
-					return;
-				}
 			}
 				
 			// use the old creds dialog
@@ -297,7 +275,9 @@ define(['orion/git/util','orion/i18nUtil','orion/git/gitPreferenceStorage','orio
 				serviceRegistry: serviceRegistry,
 				func: triggerCallback,
 				errordata: errorData,
-				closeCallback: closeCallback
+				closeCallback: closeCallback,
+				username: true,
+				password: true
 			});
 			
 			credentialsDialog.show();
